@@ -96,7 +96,7 @@ $giaMoi = $giaGoc * (100 - $giamApDung) / 100;
 
         echo '<p class="desc">'.mb_strimwidth($row['moTa'],0,80,'...').'</p>';
         echo '<div class="card-actions">';
-        echo '<a href="product.php?id='.$row['maSanPham'].'">Xem chi tiết</a>';
+        //echo '<a href="product.php?id='.$row['maSanPham'].'">Xem chi tiết</a>';
         if ($isHetHang) {
             echo '<span class="btn-disabled">Hết hàng</span>';
         } else {
