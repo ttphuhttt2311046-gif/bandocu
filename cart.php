@@ -433,7 +433,7 @@ function confirmCheckout() {
         cancelButtonText: 'Hủy'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = 'cart.php?action=checkout';
+window.location.href = 'checkout.php';
         }
     });
     return false; // Ngăn href mặc định
@@ -449,4 +449,3 @@ function confirmCheckout() {
     <div class="container">© <?php echo date("Y"); ?> Shop Đồ Cũ</div>
   </footer>
 </body>
-</html>
