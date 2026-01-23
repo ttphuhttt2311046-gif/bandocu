@@ -74,15 +74,12 @@ $stmt->close();
                 <label>Mật khẩu:</label>
                 <input type="password" name="password" required>
             </div>
-            <div class="cadkdn">
-                <div class="dangki">
-                    <button type="submit">Đăng Nhập</button>
-                </div>
-                <div class="dangki">
-                    <button type="button" onclick="window.location.href='register.php'">Đăng ký</button>
-                </div>
-            </div>
-        </form>
+            <div class="dangki">
+    <button type="submit">Đăng Nhập</button>
+    <button type="button" onclick="window.location.href='register.php'">
+        Đăng ký
+    </button>
+</div>
     </div>
 </body>
 </html>
