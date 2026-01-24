@@ -86,45 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <title>Thanh toán</title>
-<style>
-body{
-    font-family: Arial;
-    background:#f4f6f8;
-}
-.checkout-box{
-    width:700px;
-    margin:40px auto;
-    background:#fff;
-    padding:25px;
-    border-radius:8px;
-    box-shadow:0 0 10px rgba(0,0,0,0.1);
-}
-h2{
-    margin-bottom:15px;
-}
-.info p{
-    margin:6px 0;
-}
-.total{
-    font-size:20px;
-    color:#e74c3c;
-    font-weight:bold;
-}
-.pay-method{
-    margin-top:20px;
-}
-button{
-    margin-top:20px;
-    width:100%;
-    padding:12px;
-    font-size:16px;
-    background:#27ae60;
-    color:#fff;
-    border:none;
-    border-radius:5px;
-    cursor:pointer;
-}
-</style>
+  <link rel="stylesheet" href="assets/css/checkout.css">
 </head>
 
 <body>
@@ -156,12 +118,10 @@ button{
         </div>
 
         <button type="submit">XÁC NHẬN THANH TOÁN</button>
+       <a href="cart.php" class="quaylai">← Quay lại giỏ hàng</a>
+
     </form>
 </div>
 
 </body>
-<<<<<<< HEAD
 </html>
-=======
-</html>
->>>>>>> 4177ff2c93d1b66ec41b07a91b21e5c70de97692

@@ -348,8 +348,9 @@ if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
   <strong>Tổng cộng: <?php echo number_format($total,0,',','.'); ?> VND</strong>
 </div>
 
+
 <div class="cart-actions">
-  <a class="btn btn-checkout" href="#" onclick="return confirmCheckout()">Thanh toán</a>
+  <a class="btn btn-checkout" href="checkout.php">Thanh toán</a>
 </div>
 
 <script>
