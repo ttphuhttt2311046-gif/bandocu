@@ -168,6 +168,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit">XÁC NHẬN THANH TOÁN</button>
         <a href="cart.php">← Quay lại giỏ</a>
+       <a href="cart.php" class="quaylai">← Quay lại giỏ hàng</a>
+
     </form>
 </div>
 

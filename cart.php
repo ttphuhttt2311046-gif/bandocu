@@ -360,7 +360,10 @@ if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
 
 
 <div class="cart-actions">
+
   <a class="btn btn-checkout" href="checkout.php">Thanh toán</a>
+
+  <a class="btn btn-outline" href="checkout.php">Thanh toán</a>
 </div>
 
 <script>
@@ -432,23 +435,7 @@ function confirmDelete(id) {
     });
     return false;
 }
-function confirmCheckout() {
-    Swal.fire({
-        title: 'Xác nhận thanh toán?',
-        text: "Bạn có chắc chắn muốn thanh toán đơn hàng này?",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Thanh toán',
-        cancelButtonText: 'Hủy'
-    }).then((result) => {
-        if (result.isConfirmed) {
-window.location.href = 'checkout.php';
-        }
-    });
-    return false; // Ngăn href mặc định
-}
+
 </script>
 
     <?php else: ?>
