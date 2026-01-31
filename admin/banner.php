@@ -75,6 +75,15 @@ $banners = $conn->query("SELECT * FROM banner ORDER BY thu_tu ASC, id DESC");
 
 <h4 class="mb-3">Quản lý Banner</h4>
 
+<style>
+.banner-thumb {
+    max-height: 60px;
+    width: auto;
+    max-width: 180px;
+    display: block;
+}
+</style>
+
 <form id="formBanner" enctype="multipart/form-data" class="card p-3 mb-4">
     <input type="hidden" name="them_banner" value="1">
     <input type="file" name="hinh" class="form-control mb-2" required>
@@ -95,7 +104,7 @@ $banners = $conn->query("SELECT * FROM banner ORDER BY thu_tu ASC, id DESC");
 <tbody>
 <?php while($b = $banners->fetch_assoc()): ?>
 <tr id="banner-<?= $b['id'] ?>">
-    <td><img src="../<?= $b['hinh'] ?>" style="height:60px"></td>
+    <td><img src="../<?= $b['hinh'] ?>" class="banner-thumb"></td>
     <td><?= htmlspecialchars($b['link']) ?></td>
     <td><?= $b['thu_tu'] ?></td>
     <td class="text-center">
@@ -123,7 +132,7 @@ document.getElementById('formBanner').addEventListener('submit', function(e){
         const tr = document.createElement('tr');
         tr.id = 'banner-'+d.id;
         tr.innerHTML = `
-            <td><img src="../${d.hinh}" style="height:60px"></td>
+            <td><img src="../${d.hinh}" class="banner-thumb"></td>
             <td>${d.link}</td>
             <td>${d.thu_tu}</td>
             <td class="text-center">

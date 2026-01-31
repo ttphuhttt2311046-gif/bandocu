@@ -91,16 +91,15 @@ $_SESSION['last_visit'] = time();
 <!-- 🔹 DANH MỤC -->
 <div class="category-bar">
 <?php
-$cats = $conn->query("SELECT maDanhMuc, tenDanhMuc FROM danhmuc ORDER BY tenDanhMuc ASC");
+// THÊM ORDER BY thu_tu
+$cats = $conn->query("SELECT maDanhMuc, tenDanhMuc FROM danhmuc ORDER BY thu_tu ASC, maDanhMuc ASC");
 $allActive = !isset($_GET['cat']) ? 'active' : '';
 echo '<a href="index.php" class="cat-item all '.$allActive.'">Tất cả</a>';
 
 if ($cats && $cats->num_rows > 0) {
     while ($cat = $cats->fetch_assoc()) {
-        $catId = (int)$cat['maDanhMuc'];
-        $active = (isset($_GET['cat']) && intval($_GET['cat']) === $catId) ? 'active' : '';
-        echo '<a class="cat-item '.$active.'" href="index.php?cat='.$catId.'">'
-            .htmlspecialchars($cat['tenDanhMuc']).'</a>';
+        $catActive = (isset($_GET['cat']) && $_GET['cat'] == $cat['maDanhMuc']) ? 'active' : '';
+        echo '<a href="?cat='.$cat['maDanhMuc'].'" class="cat-item '.$catActive.'">'.$cat['tenDanhMuc'].'</a>';
     }
 }
 ?>

@@ -77,7 +77,9 @@ $totalTraffic = intval($trafficQuery->fetch_assoc()['total']);
         <li class="nav-item"><a class="nav-link load-page" data-page="products.php" href="#"><i class="fas fa-fw fa-table"></i><span>Quản lý sản phẩm</span></a></li>
         <hr class="sidebar-divider d-none d-md-block">
         <li class="nav-item"><a class="nav-link load-page" data-page="banner.php" href="#"><i class="fas fa-images"></i><span>Quản lý Banner</span>
-  </a>
+        <hr class="sidebar-divider d-none d-md-block">
+        <li class="nav-item"><a class="nav-link load-page" data-page="qldanhmuc.php" href="#"><i class="fas fa-list"></i><span>Quản lý Danh Mục</span></a></li>
+    </a>
 </li>
 
 </a>
