@@ -4,7 +4,7 @@ include "db.php";
 
 /* ======================
    KIỂM TRA ĐĂNG NHẬP
-   ====================== */
+====================== */
 if (!isset($_SESSION['user_id'])) {
     echo "<script>alert('Vui lòng đăng nhập'); window.location='login.php';</script>";
     exit;
@@ -19,57 +19,97 @@ $maTaiKhoan = intval($_SESSION['user_id']);
 
 /* ======================
    LẤY THÔNG TIN USER
-   ====================== */
-$sqlUser = $conn->prepare("
+====================== */
+$stmt = $conn->prepare("
     SELECT tenNguoiDung, soDienThoai, diaChi
     FROM taikhoan
     WHERE maTaiKhoan = ?
 ");
-$sqlUser->bind_param("i", $maTaiKhoan);
-$sqlUser->execute();
-$user = $sqlUser->get_result()->fetch_assoc();
-$sqlUser->close();
+$stmt->bind_param("i", $maTaiKhoan);
+$stmt->execute();
+$user = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
 /* ======================
    TÍNH TỔNG TIỀN
-   ====================== */
+====================== */
 $tongTien = 0;
 foreach ($_SESSION['cart'] as $item) {
-
-    $gia = 0;
-    $soLuong = 1;
-
-    if (isset($item['gia'])) $gia = $item['gia'];
-    if (isset($item['donGia'])) $gia = $item['donGia'];
-    if (isset($item['price'])) $gia = $item['price'];
-
-    if (isset($item['soLuong'])) $soLuong = $item['soLuong'];
-    if (isset($item['qty'])) $soLuong = $item['qty'];
-    if (isset($item['quantity'])) $soLuong = $item['quantity'];
-
+    $gia = $item['gia'] ?? $item['donGia'] ?? $item['price'];
+    $soLuong = $item['soLuong'] ?? $item['qty'] ?? $item['quantity'] ?? 1;
     $tongTien += $gia * $soLuong;
 }
 
 /* ======================
    XỬ LÝ SUBMIT
-   ====================== */
+====================== */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $phuongThuc = $_POST['phuongthuc'];
 
-    // Tạo đơn hàng (chưa thanh toán)
+    /* ======================
+       1️⃣ TẠO ĐƠN HÀNG
+    ====================== */
     $stmt = $conn->prepare("
         INSERT INTO donhang (ngayDat, tongTien, trangThai, maNguoiMua)
-        VALUES (NOW(), ?, 0, ?)
+        VALUES (NOW(), ?, 'Đang xử lý', ?)
     ");
     $stmt->bind_param("di", $tongTien, $maTaiKhoan);
     $stmt->execute();
     $maDonHang = $stmt->insert_id;
     $stmt->close();
 
-    $_SESSION['maDonHang'] = $maDonHang;
+    /* ======================
+       2️⃣ CHI TIẾT ĐƠN HÀNG
+    ====================== */
+    $stmtCT = $conn->prepare("
+        INSERT INTO chitietdonhang
+        (maDonHang, maSanPham, maNguoiBan, soLuong, donGia, thanhTien)
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
 
+    foreach ($_SESSION['cart'] as $item) {
+
+        $maSanPham = $item['maSanPham'] ?? $item['id'];
+        $donGia = $item['gia'] ?? $item['donGia'] ?? $item['price'];
+        $soLuong = $item['soLuong'] ?? $item['qty'] ?? 1;
+        $thanhTien = $donGia * $soLuong;
+
+        // lấy người bán
+        $q = $conn->prepare("SELECT maNguoiBan FROM sanpham WHERE maSanPham = ?");
+        $q->bind_param("i", $maSanPham);
+        $q->execute();
+        $maNguoiBan = $q->get_result()->fetch_assoc()['maNguoiBan'];
+        $q->close();
+
+        $stmtCT->bind_param(
+            "iiiidd",
+            $maDonHang,
+            $maSanPham,
+            $maNguoiBan,
+            $soLuong,
+            $donGia,
+            $thanhTien
+        );
+        $stmtCT->execute();
+    }
+    $stmtCT->close();
+
+    /* ======================
+       3️⃣ THANH TOÁN
+    ====================== */
     if ($phuongThuc === 'cod') {
+
+        $stmtTT = $conn->prepare("
+            INSERT INTO thanhtoan
+            (maDonHang, phuongThuc, soTien, trangThai)
+            VALUES (?, 'cod', ?, 'pending')
+        ");
+        $stmtTT->bind_param("id", $maDonHang, $tongTien);
+        $stmtTT->execute();
+        $stmtTT->close();
+
+        unset($_SESSION['cart']);
         header("Location: order_success.php");
         exit;
     }
@@ -78,6 +118,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: vnpay_create_payment.php?order_id=".$maDonHang);
         exit;
     }
+
+    if ($phuongThuc === 'fake_vnpay') {
+
+    $stmtTT = $conn->prepare("
+        INSERT INTO thanhtoan
+        (maDonHang, phuongThuc, soTien, trangThai)
+        VALUES (?, 'fake_vnpay', ?, 'paid')
+    ");
+    $stmtTT->bind_param("id", $maDonHang, $tongTien);
+    $stmtTT->execute();
+    $stmtTT->close();
+
+    unset($_SESSION['cart']);
+    header("Location: fake_vnpay.php");
+    exit;
+}
+
 }
 ?>
 
@@ -86,9 +143,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <title>Thanh toán</title>
-  <link rel="stylesheet" href="assets/css/checkout.css">
+<link rel="stylesheet" href="assets/css/checkout.css">
 </head>
-
 <body>
 
 <div class="checkout-box">
@@ -106,20 +162,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p class="total"><?= number_format($tongTien) ?> VNĐ</p>
 
     <form method="POST">
-        <div class="pay-method">
-            <label>
-                <input type="radio" name="phuongthuc" value="cod" checked>
-                Thanh toán khi nhận hàng
-            </label><br><br>
-            <label>
-                <input type="radio" name="phuongthuc" value="vnpay">
-                Thanh toán qua VNPay
-            </label>
-        </div>
+        <label><input type="radio" name="phuongthuc" value="cod" checked> Thanh toán khi nhận hàng</label><br><br>
+        <label><input type="radio" name="phuongthuc" value="vnpay"> Thanh toán VNPay</label><br><br>
+        <label><input type="radio" name="phuongthuc" value="fake_vnpay"> VNPay Demo</label><br><br>
 
         <button type="submit">XÁC NHẬN THANH TOÁN</button>
-       <a href="cart.php" class="quaylai">← Quay lại giỏ hàng</a>
-
+        <a href="cart.php">← Quay lại giỏ</a>
     </form>
 </div>
 

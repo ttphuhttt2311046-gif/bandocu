@@ -7,19 +7,24 @@ if (!isset($_SESSION['user_id']) || $_SESSION['vaitro'] !== 'seller') {
     exit;
 }
 
-$id = intval($_GET['id']);
-$status = $_GET['status'] ?? '';
 $maNguoiBan = intval($_SESSION['user_id']);
+$maDonHang  = intval($_GET['id']);
+$status     = $_GET['status'] ?? '';
 
-$stmt = $conn->prepare("
+$sql = "
 UPDATE donhang 
-SET trangThai = ? 
-WHERE maDonHang IN (
+SET trangThai = ?
+WHERE maDonHang = ?
+AND maDonHang IN (
     SELECT maDonHang FROM chitietdonhang WHERE maNguoiBan = ?
 )
-AND maDonHang = ?
-");
-$stmt->bind_param("sii", $status, $maNguoiBan, $id);
+";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("sii", $status, $maDonHang, $maNguoiBan);
 $stmt->execute();
 
-echo "<script>alert('Cập nhật trạng thái thành công!'); window.location='seller_orders.php';</script>";
+echo "<script>
+alert('Đã cập nhật trạng thái đơn hàng!');
+window.location='seller_orders.php';
+</script>";

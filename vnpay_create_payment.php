@@ -62,16 +62,20 @@ $inputData = array(
    TẠO CHỮ KÝ
    ====================== */
 ksort($inputData);
-$query = "";
 $hashdata = "";
+$query = "";
 
 foreach ($inputData as $key => $value) {
-    $hashdata .= ($hashdata ? '&' : '') . urlencode($key) . "=" . urlencode($value);
-    $query .= urlencode($key) . "=" . urlencode($value) . '&';
+    // HASH: KHÔNG urlencode
+    $hashdata .= ($hashdata ? '&' : '') . $key . "=" . $value;
+
+    // URL: CÓ urlencode
+    $query .= urlencode($key) . "=" . urlencode($value) . "&";
 }
 
 $vnp_SecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
 $vnp_Url = $vnp_Url . "?" . $query . "vnp_SecureHash=" . $vnp_SecureHash;
+
 
 /* ======================
    REDIRECT SANG VNPAY

@@ -43,69 +43,76 @@ if ($vaitro === 'admin') {
 }
 
 /* ======================================================
-   3) TÍNH DOANH THU (CHỈ SELLER)
+   3) TÍNH DOANH THU (CHỈ SELLER) – FIX CHUẨN
 ====================================================== */
+
 $tongDoanhThuAll = 0;
-$doanhThuNgay = 0;
-$doanhThuThang = 0;
-$doanhThuNam = 0;
+$doanhThuNgay    = 0;
+$doanhThuThang   = 0;
+$doanhThuNam     = 0;
 
 if ($vaitro !== 'admin') {
 
-    /* --- Doanh thu --- */
+    /* ===== TỔNG DOANH THU ===== */
     $stmt = $conn->prepare("
-    SELECT COALESCE(SUM(ct.soLuong * ct.donGia),0) AS doanhThu
-    FROM chitietdonhang ct
-    INNER JOIN sanpham s ON ct.maSanPham = s.maSanPham
-    INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
-    WHERE s.maNguoiBan = ?
-      AND dh.trangThai = 'Hoàn thành'");
+        SELECT COALESCE(SUM(ct.thanhTien), 0) AS doanhThu
+        FROM chitietdonhang ct
+        INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
+        WHERE ct.maNguoiBan = ?
+          AND dh.trangThai = 'Hoàn thành'
+    ");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
-    $tongDoanhThuAll = $stmt->get_result()->fetch_assoc()['doanhThu'];
+    $tongDoanhThuAll = $stmt->get_result()->fetch_assoc()['doanhThu'] ?? 0;
+    $stmt->close();
 
-    /* --- Doanh thu theo ngày --- */
+    /* ===== DOANH THU HÔM NAY ===== */
     $today = date("Y-m-d");
     $stmt = $conn->prepare("
-    SELECT COALESCE(SUM(ct.soLuong * ct.donGia),0) AS doanhThuNgay
-    FROM chitietdonhang ct
-    INNER JOIN sanpham s ON ct.maSanPham = s.maSanPham
-    INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
-    WHERE s.maNguoiBan = ?
-      AND DATE(dh.ngayDat) = ?
-      AND dh.trangThai = 'Hoàn thành'");
+        SELECT COALESCE(SUM(ct.thanhTien), 0) AS doanhThuNgay
+        FROM chitietdonhang ct
+        INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
+        WHERE ct.maNguoiBan = ?
+          AND DATE(dh.ngayDat) = ?
+          AND dh.trangThai = 'Hoàn thành'
+    ");
     $stmt->bind_param("is", $user_id, $today);
     $stmt->execute();
-    $doanhThuNgay = $stmt->get_result()->fetch_assoc()['doanhThuNgay'];
+    $doanhThuNgay = $stmt->get_result()->fetch_assoc()['doanhThuNgay'] ?? 0;
+    $stmt->close();
 
-    /* --- Doanh thu theo tháng --- */
-    $month = date("Y-m");       
+    /* ===== DOANH THU THÁNG ===== */
+    $month = date("Y-m");
     $stmt = $conn->prepare("
-    SELECT COALESCE(SUM(ct.soLuong * ct.donGia),0) AS doanhThuThang
-    FROM chitietdonhang ct
-    INNER JOIN sanpham s ON ct.maSanPham = s.maSanPham
-    INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
-    WHERE s.maNguoiBan = ?
-      AND DATE_FORMAT(dh.ngayDat,'%Y-%m') = ?
-      AND dh.trangThai = 'Hoàn thành'");
+        SELECT COALESCE(SUM(ct.thanhTien), 0) AS doanhThuThang
+        FROM chitietdonhang ct
+        INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
+        WHERE ct.maNguoiBan = ?
+          AND DATE_FORMAT(dh.ngayDat, '%Y-%m') = ?
+          AND dh.trangThai = 'Hoàn thành'
+    ");
     $stmt->bind_param("is", $user_id, $month);
     $stmt->execute();
-    $doanhThuThang = $stmt->get_result()->fetch_assoc()['doanhThuThang'];
+    $doanhThuThang = $stmt->get_result()->fetch_assoc()['doanhThuThang'] ?? 0;
+    $stmt->close();
 
-    /* --- Doanh thu theo năm --- */
+    /* ===== DOANH THU NĂM ===== */
     $year = date("Y");
     $stmt = $conn->prepare("
-    SELECT COALESCE(SUM(ct.soLuong * ct.donGia),0) AS doanhThuNam
-    FROM chitietdonhang ct
-    INNER JOIN sanpham s ON ct.maSanPham = s.maSanPham
-    INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
-    WHERE s.maNguoiBan = ?
-      AND DATE_FORMAT(dh.ngayDat,'%Y') = ?
-      AND dh.trangThai = 'hoàn thành'");
+        SELECT COALESCE(SUM(ct.thanhTien), 0) AS doanhThuNam
+        FROM chitietdonhang ct
+        INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
+        WHERE ct.maNguoiBan = ?
+          AND YEAR(dh.ngayDat) = ?
+          AND dh.trangThai = 'Hoàn thành'
+    ");
     $stmt->bind_param("is", $user_id, $year);
     $stmt->execute();
-    $doanhThuNam = $stmt->get_result()->fetch_assoc()['doanhThuNam'];
+    $doanhThuNam = $stmt->get_result()->fetch_assoc()['doanhThuNam'] ?? 0;
+    $stmt->close();
 }
+
+
 ?>
 
 

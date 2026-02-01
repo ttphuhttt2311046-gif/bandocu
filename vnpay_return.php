@@ -8,6 +8,7 @@ $vnp_HashSecret = "Y7GFSRHIF6NMF42LOAI116GNW6ZTXQ0R"; // giống file create
    KIỂM TRA DỮ LIỆU TRẢ VỀ
    ====================== */
 $vnp_SecureHash = $_GET['vnp_SecureHash'] ?? '';
+
 unset($_GET['vnp_SecureHash']);
 unset($_GET['vnp_SecureHashType']);
 
@@ -15,10 +16,16 @@ ksort($_GET);
 $hashData = "";
 
 foreach ($_GET as $key => $value) {
-    $hashData .= ($hashData ? '&' : '') . urlencode($key) . "=" . urlencode($value);
+    // ❌ KHÔNG urlencode
+    $hashData .= ($hashData ? '&' : '') . $key . "=" . $value;
 }
 
 $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+
+if ($secureHash !== $vnp_SecureHash) {
+    die("❌ Chữ ký không hợp lệ");
+}
+
 
 /* ======================
    XÁC THỰC CHỮ KÝ

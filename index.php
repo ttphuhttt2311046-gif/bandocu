@@ -46,6 +46,7 @@ $_SESSION['last_visit'] = time();
         <?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0; ?>
         )
       </a>
+<a href="orders.php">🧾 Lịch sử đơn hàng</a>
 
       <?php if (isset($_SESSION['user_id'])): ?>
 

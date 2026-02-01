@@ -290,7 +290,6 @@ if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
     }
 }
 ?>
-<a href="cart.php">Giỏ hàng (<?php echo $cartCount; ?>)</a>
 
         <a href="cart.php">🛒Giỏ hàng (<?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0; ?>)</a>
         <?php if (isset($_SESSION['user_id'])): ?>
