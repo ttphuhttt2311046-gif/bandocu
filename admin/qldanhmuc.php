@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 // ===== LẤY DANH SÁCH DANH MỤC =====
-$danhmuc = $conn->query("SELECT * FROM danhmuc ORDER BY maDanhMuc ASC");
+$danhmuc = $conn->query("SELECT * FROM danhmuc ORDER BY thu_tu ASC, maDanhMuc ASC");
 ?>
 <link rel="stylesheet" href="css/qldanhmuc.css">
 <h4 class="mb-3">📚 Quản lý Danh Mục</h4>

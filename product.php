@@ -27,7 +27,28 @@ if ($product && !empty($product['maNguoiBan'])) {
     }
     $stmtSeller->close();
 }
-
+/* ===== TÍNH GIẢM GIÁ ===== */
+$giamApDung = 0;
+$giaMoi = $product['gia'] ?? 0;
+if ($product) {
+    $giaGoc = $product['gia'];
+    $giamCaNhan = intval($product['giamGia']);
+    $giamSuKien = 0;
+    
+    $now = date('Y-m-d H:i:s');
+    $eventSql = "SELECT phanTramGiam FROM sukien_giamgia 
+                 WHERE trangThai = 1 AND batDau <= '$now' AND ketThuc >= '$now' LIMIT 1";
+    $eventRes = $conn->query($eventSql);
+    if ($eventRes && $eventRes->num_rows > 0) {
+        $event = $eventRes->fetch_assoc();
+        if ($product['tuChoiSuKien'] == 0) {
+            $giamSuKien = intval($event['phanTramGiam']);
+        }
+    }
+    
+    $giamApDung = max($giamCaNhan, $giamSuKien);
+    $giaMoi = $giaGoc * (100 - $giamApDung) / 100;
+}
 /* ===== CẬP NHẬT TÌNH TRẠNG ===== */
 if ($product) {
     $newStatus = ($product['soLuong'] > 0) ? 'Còn hàng' : 'Hết hàng';
@@ -101,7 +122,20 @@ if ($product) {
   <div class="info-box">
 
     <div class="price">
-      <?php echo number_format($product['gia'],0,',','.'); ?> ₫
+      <?php if ($giamApDung > 0): ?>
+        <span style="text-decoration: line-through; color: #999;">
+          <?php echo number_format($product['gia'],0,',','.'); ?> ₫
+        </span>
+        <br>
+        <span style="color: red; font-size: 24px; font-weight: bold;">
+          <?php echo number_format($giaMoi,0,',','.'); ?> ₫
+        </span>
+        <span style="background: red; color: white; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 18px;">
+          -<?php echo $giamApDung; ?>%
+        </span>
+      <?php else: ?>
+        <?php echo number_format($product['gia'],0,',','.'); ?> ₫
+      <?php endif; ?>
     </div>
 
     <div class="meta">

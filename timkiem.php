@@ -92,13 +92,15 @@ $result = $stmt->get_result();
                placeholder="Tìm sản phẩm..."
                required>
         <button type="button" class="btn-mic" onclick="startVoice()">🎤</button>
-        <button type="submit">➤</button>
+        <button type="submit" class="btn-find" style="display:inline-flex; align-items:center; justify-content:center; padding:9px 8px; border:none; background:#1da1f2;">
+            <img src="assets/img/find.png" alt="Tìm" style="height:40px; width:66; display:block;">
+        </button>
       </form>
     </div>
 
     <div class="nav">
       <a href="cart.php">
-        🛒 Giỏ hàng (
+        🛒Giỏ hàng(
         <?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0; ?>
         )
       </a>
@@ -123,18 +125,46 @@ $result = $stmt->get_result();
   if ($result && $result->num_rows > 0) {
       while ($row = $result->fetch_assoc()) {
           $img = 'assets/img/' . ($row['hinhAnh'] ?: 'placeholder.png');
+          
+          // TÍNH GIẢM GIÁ
+          $giaGoc = $row['gia'];
+          $giamCaNhan = intval($row['giamGia']);
+          $giamSuKien = 0;
+          
+          $now = date('Y-m-d H:i:s');
+          $eventSql = "SELECT phanTramGiam FROM sukien_giamgia 
+                       WHERE trangThai = 1 AND batDau <= '$now' AND ketThuc >= '$now' LIMIT 1";
+          $eventRes = $conn->query($eventSql);
+          if ($eventRes && $eventRes->num_rows > 0) {
+              $event = $eventRes->fetch_assoc();
+              if ($row['tuChoiSuKien'] == 0) {
+                  $giamSuKien = intval($event['phanTramGiam']);
+              }
+          }
+          
+          $giamApDung = max($giamCaNhan, $giamSuKien);
+          $giaMoi = $giaGoc * (100 - $giamApDung) / 100;
+          
           echo '<div class="card" onclick="window.location.href=\'product.php?id='.$row['maSanPham'].'\'">';
           echo '<div class="thumb"><img src="'.htmlspecialchars($img).'" alt="'.htmlspecialchars($row['tenSanPham']).'"></div>';
           echo '<div class="meta">';
           echo '<div class="title">'.htmlspecialchars($row['tenSanPham']).'</div>';
-          echo '<div class="price">'.number_format($row['gia'],0,',','.').' VND</div>';
+          
+          if ($giamApDung > 0) {
+              echo '<div class="price">';
+              echo '<span style="text-decoration:line-through; color:#999;">'.number_format($giaGoc,0,',','.').' VND</span><br>';
+              echo '<span style="color:red; font-weight:bold;">'.number_format($giaMoi,0,',','.').' VND</span>';
+              echo '</div>';
+          } else {
+              echo '<div class="price">'.number_format($giaGoc,0,',','.').' VND</div>';
+          }
+          
           echo '</div>';
           echo '<p class="desc">'.(strlen($row['moTa']) > 80
               ? htmlspecialchars(substr($row['moTa'],0,80)).'...'
               : htmlspecialchars($row['moTa'])).'</p>';
           echo '<div class="card-actions">';
-          echo '<a class="btn" href="product.php?id='.$row['maSanPham'].'">Xem chi tiết</a>';
-          echo '<a class="btn btn-outline" href="cart.php?action=add&id='.$row['maSanPham'].'">Thêm vào giỏ</a>';
+          echo '<a class="btn btn-outline" href="cart.php?action=add&id='.$row['maSanPham'].'" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 8px;"><img src="assets/img/addcart.png" alt="Thêm vào giỏ" style="height:20px; width:auto; display:block;"></a>';
           echo '</div>';
           echo '</div>';
       }

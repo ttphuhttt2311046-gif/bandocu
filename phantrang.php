@@ -106,7 +106,7 @@ echo '</div>';
         if ($isHetHang) {
             echo '<span class="btn-disabled">Hết hàng</span>';
         } else {
-            echo '<a href="cart.php?action=add&id='.$row['maSanPham'].'">Thêm vào giỏ</a>';
+            echo '<a class="btn btn-outline" href="cart.php?action=add&id='.$row['maSanPham'].'" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 8px;"><img src="assets/img/addcart.png" alt="Thêm vào giỏ" style="height:20px; width:auto; display:block;"></a>';
         }
         echo '</div>';
         echo '</div>';

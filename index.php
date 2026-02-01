@@ -35,13 +35,14 @@ $_SESSION['last_visit'] = time();
                placeholder="Tìm sản phẩm..."
                required>
         <button type="button" class="btn-mic" onclick="startVoice()">🎤</button>
-        <button type="submit">➤</button>
+        <button type="submit" class="btn-find" style="display:inline-flex; align-items:center; justify-content:center; padding:9px 8px; border:none; background:#1da1f2;">
+            <img src="assets/img/find.png" alt="Tìm" style="height:30px; width:30; display:block;">
       </form>
     </div>
 
     <div class="nav">
       <a href="cart.php">
-        🛒 Giỏ hàng (
+        🛒Giỏ hàng(
         <?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0; ?>
         )
       </a>

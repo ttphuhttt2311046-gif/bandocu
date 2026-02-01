@@ -25,7 +25,7 @@ if ($action === 'add') {
     $qty = isset($_GET['qty']) ? max(1, intval($_GET['qty'])) : 1;
 
     $stmt = $conn->prepare("
-        SELECT maSanPham, tenSanPham, gia, hinhAnh, soLuong
+        SELECT maSanPham, tenSanPham, gia, hinhAnh, soLuong, giamGia, tuChoiSuKien
         FROM sanpham
         WHERE maSanPham = ?
     ");
@@ -39,6 +39,25 @@ if ($action === 'add') {
         echo "<script>alert('Không tìm thấy sản phẩm!'); window.location='index.php';</script>";
         exit;
     }
+
+    // TÍNH GIÁ ĐÃ GIẢM
+    $giaGoc = $p['gia'];
+    $giamCaNhan = intval($p['giamGia']);
+    $giamSuKien = 0;
+    
+    $now = date('Y-m-d H:i:s');
+    $eventSql = "SELECT phanTramGiam FROM sukien_giamgia 
+                 WHERE trangThai = 1 AND batDau <= '$now' AND ketThuc >= '$now' LIMIT 1";
+    $eventRes = $conn->query($eventSql);
+    if ($eventRes && $eventRes->num_rows > 0) {
+        $event = $eventRes->fetch_assoc();
+        if ($p['tuChoiSuKien'] == 0) {
+            $giamSuKien = intval($event['phanTramGiam']);
+        }
+    }
+    
+    $giamApDung = max($giamCaNhan, $giamSuKien);
+    $giaMoi = $giaGoc * (100 - $giamApDung) / 100;
 
     $soLuongTon = intval($p['soLuong']);
     if ($soLuongTon <= 0) {
@@ -60,7 +79,7 @@ if ($action === 'add') {
     $_SESSION['cart'][$id] = [
         'id'    => $p['maSanPham'],
         'name'  => $p['tenSanPham'],
-        'price' => $p['gia'],
+        'price' => $giaMoi,
         'image' => $p['hinhAnh'],
         'qty'   => $newQty
     ];
@@ -119,10 +138,10 @@ if ($action === 'update-ajax' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 // =========================
 if ($action === 'checkout') {
     if (isset($_SESSION['checkout_lock'])) {
-    echo "<script>alert('Đơn hàng đang được xử lý, vui lòng chờ!'); window.location='index.php';</script>";
-    exit;
-}
-$_SESSION['checkout_lock'] = true;
+        echo "<script>alert('Đơn hàng đang được xử lý, vui lòng chờ!'); window.location='index.php';</script>";
+        exit;
+    }
+    $_SESSION['checkout_lock'] = true;
 
     if (empty($_SESSION['cart'])) {
         unset($_SESSION['checkout_lock']);
@@ -130,7 +149,7 @@ $_SESSION['checkout_lock'] = true;
         exit;
     }
 
-    // Tính tổng
+    // Tính tổng với giá đã giảm
     $tongTien = 0;
     foreach ($_SESSION['cart'] as $item) {
         $tongTien += $item['price'] * $item['qty'];
@@ -140,11 +159,9 @@ $_SESSION['checkout_lock'] = true;
     $ngayDat = date('Y-m-d');
     $trangThai = "Chờ xử lý";
 
-    // Begin transaction - KHuyến nghị (nếu MySQL hỗ trợ InnoDB)
     $conn->begin_transaction();
 
     try {
-        // Thêm vào bảng donhang
         $stmt = $conn->prepare("INSERT INTO donhang (ngayDat, tongTien, trangThai, maNguoiMua) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("sdsi", $ngayDat, $tongTien, $trangThai, $maNguoiMua);
 
@@ -154,14 +171,12 @@ $_SESSION['checkout_lock'] = true;
         $maDonHang = $conn->insert_id;
         $stmt->close();
 
-        // Thêm chi tiết đơn hàng, trừ tồn, gửi thông báo
         $dsNguoiBan = [];
         foreach ($_SESSION['cart'] as $item) {
             $id = intval($item['id']);
             $qty = intval($item['qty']);
             $gia = floatval($item['price']);
-			
-            // Lấy thông tin sản phẩm (cập nhật lại tồn kho và lấy seller)
+            
             $seller_stmt = $conn->prepare("SELECT maNguoiBan, soLuong FROM sanpham WHERE maSanPham = ? FOR UPDATE");
             $seller_stmt->bind_param("i", $id);
             $seller_stmt->execute();
@@ -173,12 +188,12 @@ $_SESSION['checkout_lock'] = true;
             }
             $maNguoiBan = intval($prod_info['maNguoiBan'] ?? 0);
             $soLuongTon = intval($prod_info['soLuong']);
-			$dsNguoiBan[$maNguoiBan] = true;
+            $dsNguoiBan[$maNguoiBan] = true;
+            
             if ($qty > $soLuongTon) {
                 throw new Exception("Số lượng sản phẩm #{$id} vượt quá tồn kho (còn {$soLuongTon}).");
             }
 
-            // Lưu chi tiết đơn hàng có người bán
             $sql = $conn->prepare("
                 INSERT INTO chitietdonhang (maDonHang, maSanPham, maNguoiBan, soLuong, donGia)
                 VALUES (?, ?, ?, ?, ?)
@@ -190,7 +205,6 @@ $_SESSION['checkout_lock'] = true;
             }
             $sql->close();
 
-            // Giảm hàng tồn
             $update = $conn->prepare("UPDATE sanpham SET soLuong = soLuong - ? WHERE maSanPham = ?");
             $update->bind_param("ii", $qty, $id);
             if (!$update->execute()) {
@@ -199,7 +213,7 @@ $_SESSION['checkout_lock'] = true;
             }
             $update->close();
         }
-        // Commit transaction
+        
         $conn->commit();
 		/* =========================
   		 GỬI TIN NHẮN SAU COMMIT
@@ -239,16 +253,13 @@ $_SESSION['checkout_lock'] = true;
 		$stmtBuyer->execute();
 		$stmtBuyer->close();
 unset($_SESSION['checkout_lock']);
-        // Xóa giỏ hàng
         $_SESSION['cart'] = [];
 
         echo "<script>alert('Đặt hàng thành công! Đơn hàng và chi tiết đã được lưu.'); window.location='index.php';</script>";
         exit;
     } catch (Exception $e) {
-        // Rollback nếu lỗi
         $conn->rollback();
-         unset($_SESSION['checkout_lock']);
-        // Hiện lỗi (có thể thay bằng log)
+        unset($_SESSION['checkout_lock']);
         $err = htmlspecialchars($e->getMessage());
         echo "<script>alert('Lỗi khi lưu đơn hàng: {$err}'); window.location='cart.php';</script>";
         exit;
