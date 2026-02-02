@@ -9,19 +9,18 @@ if (!isset($_GET['vnp_ResponseCode']) || !isset($_GET['vnp_TxnRef'])) {
     die("Dữ liệu VNPay không hợp lệ");
 }
 
-$maDonHang = intval($_GET['vnp_TxnRef']);
+$maDonHang   = intval($_GET['vnp_TxnRef']);
 $responseCode = $_GET['vnp_ResponseCode'];
-$soTien = isset($_GET['vnp_Amount']) ? ($_GET['vnp_Amount'] / 100) : 0;
-$nganHang = $_GET['vnp_BankCode'] ?? 'VNPAY';
-$maGiaoDich = $_GET['vnp_TransactionNo'] ?? ('VNPAY'.time());
+$soTien      = isset($_GET['vnp_Amount']) ? ($_GET['vnp_Amount'] / 100) : 0;
+$nganHang    = $_GET['vnp_BankCode'] ?? 'VNPAY';
+$maGiaoDich  = $_GET['vnp_TransactionNo'] ?? ('VNPAY' . time());
 
 /* =========================
-   KIỂM TRA THANH TOÁN
+   KIỂM TRA KẾT QUẢ THANH TOÁN
 ========================= */
 if ($responseCode !== '00') {
-    // Thanh toán thất bại
     echo "<script>
-        alert('Thanh toán VNPay thất bại');
+        alert('❌ Thanh toán VNPay thất bại');
         window.location='checkout.php';
     </script>";
     exit;
@@ -29,11 +28,11 @@ if ($responseCode !== '00') {
 
 /* =========================
    CẬP NHẬT ĐƠN HÀNG
-   1 = ĐÃ THANH TOÁN
+   0 = ĐANG XỬ LÝ (CHỜ SELLER DUYỆT)
 ========================= */
 $stmt = $conn->prepare("
     UPDATE donhang 
-    SET trangThai = 1 
+    SET trangThai = 0
     WHERE maDonHang = ?
 ");
 $stmt->bind_param("i", $maDonHang);
@@ -44,7 +43,7 @@ $stmt->close();
    GHI LỊCH SỬ THANH TOÁN
 ========================= */
 $stmtTT = $conn->prepare("
-    INSERT INTO thanhtoan
+    INSERT INTO thanhtoan 
     (maDonHang, phuongThuc, soTien, trangThai, nganHang, maGiaoDich)
     VALUES (?, 'vnpay', ?, 'success', ?, ?)
 ");

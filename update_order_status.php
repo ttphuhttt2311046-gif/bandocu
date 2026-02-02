@@ -3,28 +3,24 @@ session_start();
 include "db.php";
 
 if (!isset($_SESSION['user_id']) || $_SESSION['vaitro'] !== 'seller') {
-    header("Location: admin/login.php");
-    exit;
+    die("Không có quyền");
 }
 
-$maNguoiBan = intval($_SESSION['user_id']);
-$maDonHang  = intval($_GET['id']);
-$status     = $_GET['status'] ?? '';
+$maDonHang = intval($_GET['id']);
+$status    = intval($_GET['status']); // 0-3
 
-$sql = "
-UPDATE donhang 
-SET trangThai = ?
-WHERE maDonHang = ?
-AND maDonHang IN (
-    SELECT maDonHang FROM chitietdonhang WHERE maNguoiBan = ?
-)
-";
+// CHỈ CHO PHÉP 0-3
+if (!in_array($status, [0,1,2,3])) {
+    die("Trạng thái không hợp lệ");
+}
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sii", $status, $maDonHang, $maNguoiBan);
+$stmt = $conn->prepare("
+    UPDATE donhang 
+    SET trangThai = ?
+    WHERE maDonHang = ?
+");
+$stmt->bind_param("ii", $status, $maDonHang);
 $stmt->execute();
 
-echo "<script>
-alert('Đã cập nhật trạng thái đơn hàng!');
-window.location='seller_orders.php';
-</script>";
+header("Location: seller_orders.php");
+exit;

@@ -121,6 +121,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($phuongThuc === 'fake_vnpay') {
 
+    // ✅ LƯU SESSION CHO TRANG FAKE VNPAY
+    $_SESSION['maDonHang']   = $maDonHang;
+    $_SESSION['fake_amount'] = $tongTien;
+
     $stmtTT = $conn->prepare("
         INSERT INTO thanhtoan
         (maDonHang, phuongThuc, soTien, trangThai)
@@ -134,6 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header("Location: fake_vnpay.php");
     exit;
 }
+
 
 }
 ?>
@@ -167,7 +172,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label><input type="radio" name="phuongthuc" value="fake_vnpay"> VNPay Demo</label><br><br>
 
         <button type="submit">XÁC NHẬN THANH TOÁN</button>
-        <a href="cart.php">← Quay lại giỏ</a>
        <a href="cart.php" class="quaylai">← Quay lại giỏ hàng</a>
 
     </form>

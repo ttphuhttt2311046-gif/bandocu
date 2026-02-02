@@ -363,7 +363,6 @@ if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
 
   <a class="btn btn-checkout" href="checkout.php">Thanh toán</a>
 
-  <a class="btn btn-outline" href="checkout.php">Thanh toán</a>
 </div>
 
 <script>

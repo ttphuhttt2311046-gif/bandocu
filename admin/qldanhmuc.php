@@ -174,7 +174,7 @@ $danhmuc = $conn->query("SELECT * FROM danhmuc ORDER BY thu_tu ASC, maDanhMuc AS
     
     <!-- FORM THÊM DANH MỤC -->
     <div class="form-add-danhmuc">
-        <h5>➕ Thêm Danh Mục Mới</h5>
+        <h5>+ Thêm Danh Mục Mới</h5>
         <form id="formThemDanhMuc">
             <input type="hidden" name="them_danhmuc" value="1">
             <input 
@@ -195,6 +195,7 @@ $danhmuc = $conn->query("SELECT * FROM danhmuc ORDER BY thu_tu ASC, maDanhMuc AS
     <!-- DANH SÁCH DANH MỤC -->
     <h5>📋 Danh Sách Danh Mục (Kéo để sắp xếp)</h5>
     <ul id="danhsach-danhmuc" class="sortable-list">
+        
         <?php while ($dm = $danhmuc->fetch_assoc()): 
             // Đếm số sản phẩm trong danh mục
             $countProduct = $conn->query("SELECT COUNT(*) as cnt FROM sanpham WHERE maDanhMuc={$dm['maDanhMuc']}")->fetch_assoc();
