@@ -16,6 +16,9 @@ $_SESSION['last_visit'] = time();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shop Đồ Cũ - Trang chủ</title>
   <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/stylebannersau.css">
+    <link rel="stylesheet" href="assets/css/stylehoadao.css">
+
 </head>
 
 <header class="topbar">
@@ -35,8 +38,8 @@ $_SESSION['last_visit'] = time();
                placeholder="Tìm sản phẩm..."
                required>
         <button type="button" class="btn-mic" onclick="startVoice()">🎤</button>
-        <button type="submit" class="btn-find" style="display:inline-flex; align-items:center; justify-content:center; padding:9px 8px; border:none; background:#1da1f2;">
-            <img src="assets/img/find.png" alt="Tìm" style="height:30px; width:30; display:block;">
+       <button type="submit" class="btn-find" style="display:inline-flex; align-items:center; justify-content:center; padding:9px 8px; border:none; background:#1da1f2;">
+            <img src="assets/img/bttimkim.jpg" alt="Tìm" style="height:30px; width:30; display:block;">
       </form>
     </div>
 
@@ -298,6 +301,36 @@ document.addEventListener("DOMContentLoaded", function () {
     btnBottom.style.display = scrollTop < maxScroll - 300 ? "flex" : "none";
   });
 });
+
+</script>
+<!-- Script hoa đào -->
+<div class="sakura-falling"></div>
+
+<script>
+function createSakura() {
+    const sakura = document.createElement("div");
+    sakura.classList.add("sakura");
+
+    // Vị trí rơi
+    sakura.style.left = Math.random() * window.innerWidth + "px";
+
+    // Kích thước NGẪU NHIÊN lớn hơn
+    const size = 30 + Math.random() * 20;  // 30–50px
+    sakura.style.width = size + "px";
+    sakura.style.height = size + "px";
+
+    // Rơi chậm hơn
+    sakura.style.animationDuration = 12 + Math.random() * 12 + "s";  
+    // từ 12s → 24s
+
+    document.querySelector(".sakura-falling").appendChild(sakura);
+
+    // 🌸 GIỮ BÔNG LÂU (2 phút rưỡi rồi mới xoá)
+    setTimeout(() => sakura.remove(), 160000);
+}
+
+// 🌸 THƯA HƠN: mỗi 1000ms (1 giây) mới tạo 1 bông
+setInterval(createSakura, 1000);
 </script>
 </body>
 </html>

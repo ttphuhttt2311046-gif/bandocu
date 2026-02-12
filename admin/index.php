@@ -59,7 +59,7 @@ if ($vaitro !== 'admin') {
         FROM chitietdonhang ct
         INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
         WHERE ct.maNguoiBan = ?
-          AND dh.trangThai = 'Hoàn thành'
+          AND dh.trangThai = 2
     ");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
@@ -67,50 +67,48 @@ if ($vaitro !== 'admin') {
     $stmt->close();
 
     /* ===== DOANH THU HÔM NAY ===== */
-    $today = date("Y-m-d");
     $stmt = $conn->prepare("
         SELECT COALESCE(SUM(ct.thanhTien), 0) AS doanhThuNgay
         FROM chitietdonhang ct
         INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
         WHERE ct.maNguoiBan = ?
-          AND DATE(dh.ngayDat) = ?
-          AND dh.trangThai = 'Hoàn thành'
+          AND DATE(dh.ngayDat) = CURDATE()
+          AND dh.trangThai = 2
     ");
-    $stmt->bind_param("is", $user_id, $today);
+    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $doanhThuNgay = $stmt->get_result()->fetch_assoc()['doanhThuNgay'] ?? 0;
     $stmt->close();
 
     /* ===== DOANH THU THÁNG ===== */
-    $month = date("Y-m");
     $stmt = $conn->prepare("
         SELECT COALESCE(SUM(ct.thanhTien), 0) AS doanhThuThang
         FROM chitietdonhang ct
         INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
         WHERE ct.maNguoiBan = ?
-          AND DATE_FORMAT(dh.ngayDat, '%Y-%m') = ?
-          AND dh.trangThai = 'Hoàn thành'
+          AND DATE_FORMAT(dh.ngayDat, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m')
+          AND dh.trangThai = 2
     ");
-    $stmt->bind_param("is", $user_id, $month);
+    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $doanhThuThang = $stmt->get_result()->fetch_assoc()['doanhThuThang'] ?? 0;
     $stmt->close();
 
     /* ===== DOANH THU NĂM ===== */
-    $year = date("Y");
     $stmt = $conn->prepare("
         SELECT COALESCE(SUM(ct.thanhTien), 0) AS doanhThuNam
         FROM chitietdonhang ct
         INNER JOIN donhang dh ON ct.maDonHang = dh.maDonHang
         WHERE ct.maNguoiBan = ?
-          AND YEAR(dh.ngayDat) = ?
-          AND dh.trangThai = 'Hoàn thành'
+          AND YEAR(dh.ngayDat) = YEAR(CURDATE())
+          AND dh.trangThai = 2
     ");
-    $stmt->bind_param("is", $user_id, $year);
+    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $doanhThuNam = $stmt->get_result()->fetch_assoc()['doanhThuNam'] ?? 0;
     $stmt->close();
 }
+
 
 
 ?>
