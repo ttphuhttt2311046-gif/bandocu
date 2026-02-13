@@ -44,11 +44,14 @@ $_SESSION['last_visit'] = time();
     </div>
 
     <div class="nav">
-      <a href="cart.php">
-        🛒Giỏ hàng(
-        <?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0; ?>
-        )
-      </a>
+     <a href="cart.php" id="cart-icon">
+      🛒Giỏ hàng(
+      <span class="cart-count">
+      <?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0; ?>
+      </span>
+)
+</a>
+
 <a href="orders.php">🧾 Lịch sử đơn hàng</a>
 
       <?php if (isset($_SESSION['user_id'])): ?>
@@ -332,5 +335,46 @@ function createSakura() {
 // 🌸 THƯA HƠN: mỗi 1000ms (1 giây) mới tạo 1 bông
 setInterval(createSakura, 1000);
 </script>
+<script>
+function addToCart(id) {
+    fetch("cart.php?action=add&id=" + id)
+    .then(response => response.text())
+    .then(data => {
+
+        updateCartCount();
+        showToast("Đã thêm vào giỏ hàng!");
+
+        // Hiệu ứng rung icon giỏ
+        const cartIcon = document.getElementById("cart-icon");
+        cartIcon.classList.add("shake");
+        setTimeout(() => cartIcon.classList.remove("shake"), 500);
+    })
+    .catch(() => {
+        showToast("Có lỗi xảy ra!");
+    });
+}
+
+function updateCartCount() {
+    fetch("cart_count.php")
+    .then(res => res.text())
+    .then(count => {
+        document.querySelector(".cart-count").innerText = count;
+    });
+}
+
+function showToast(message) {
+    let toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 10);
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
+}
+</script>
+
 </body>
 </html>

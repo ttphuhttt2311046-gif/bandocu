@@ -3,6 +3,9 @@ if (!isset($conn)) {
     include "db.php";
 }
 
+/* KHÔNG cần session_start() ở đây */
+/* Vì file này thường được include từ index.php */
+
 /* CẤU HÌNH */
 $limit = 20;
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
@@ -26,7 +29,8 @@ $totalItems = intval($total_row['total']);
 $totalPages = max(1, ceil($totalItems / $limit));
 
 /* QUERY */
-$sql = "SELECT maSanPham, tenSanPham, moTa, gia, giamGia, tuChoiSuKien,hinhAnh, soLuong
+$sql = "SELECT maSanPham, tenSanPham, moTa, gia, giamGia,
+        hinhAnh, soLuong
         FROM sanpham
         $where_sql
         ORDER BY maSanPham DESC
@@ -34,110 +38,102 @@ $sql = "SELECT maSanPham, tenSanPham, moTa, gia, giamGia, tuChoiSuKien,hinhAnh, 
 
 $res = $conn->query($sql);
 
-$now = date('Y-m-d H:i:s');
-$event = null;
-
-$eventSql = "
-  SELECT * FROM sukien_giamgia
-  WHERE trangThai = 1
-    AND batDau <= '$now'
-    AND ketThuc >= '$now'
-  LIMIT 1
-";
-$eventRes = $conn->query($eventSql);
-if ($eventRes && $eventRes->num_rows > 0) {
-    $event = $eventRes->fetch_assoc();
-}
-
-/* ========== GRID ========== */
+/* ================= GRID ================= */
 echo '<div class="grid">';
 
 if ($res && $res->num_rows > 0) {
+
     while ($row = $res->fetch_assoc()) {
+
         $img = 'assets/img/' . ($row['hinhAnh'] ?: 'placeholder.png');
         $isHetHang = ($row['soLuong'] <= 0);
         $cardClass = $isHetHang ? 'card het-hang' : 'card';
+
         $giaGoc = $row['gia'];
-$giamCaNhan = intval($row['giamGia']);
-$giamSuKien = 0;
+        $giam = intval($row['giamGia']);
+        $giaMoi = $giaGoc * (100 - $giam) / 100;
 
-if ($event && $row['tuChoiSuKien'] == 0) {
-    $giamSuKien = intval($event['phanTramGiam']);
-}
+        echo '<div class="'.$cardClass.'">';
 
-$giamApDung = max($giamCaNhan, $giamSuKien);
+            /* LINK CHI TIẾT */
+            echo '<a class="card-link" href="product.php?id='.$row['maSanPham'].'">';
 
-$giaMoi = $giaGoc * (100 - $giamApDung) / 100;
+                echo '<div class="img-wrap">';
+                    echo '<img src="'.$img.'" alt="'.$row['tenSanPham'].'">';
+                echo '</div>';
 
-        echo '<div class="'.$cardClass.'" onclick="window.location=\'product.php?id='.$row['maSanPham'].'\'">';
-        // ===== ẢNH + OVERLAY =====
-        echo '<div class="img-wrap">';
-echo '<img src="'.$img.'">';
+                echo '<div class="title">'.$row['tenSanPham'].'</div>';
 
-echo '<span class="tet-icon">🎉 XUÂN 2026</span>'; // ICON TẾT
+            echo '</a>';
 
-if ($giamApDung > 0) {
-    if ($giamSuKien > $giamCaNhan) {
-        echo '<span class="badge-flash">FLASH SALE -'.$giamApDung.'%</span>';
-    } else {
-        echo '<span class="badge-sale">-'.$giamApDung.'%</span>';
-    }
-}
+            /* GIÁ */
+            echo '<div class="price">';
+                if ($giam > 0) {
+                    echo '<span class="old-price">'.number_format($giaGoc,0,',','.').' VND</span>';
+                    echo '<span class="new-price">'.number_format($giaMoi,0,',','.').' VND</span>';
+                } else {
+                    echo number_format($giaGoc,0,',','.').' VND';
+                }
+            echo '</div>';
 
-if ($isHetHang) {
-    echo '<span class="badge-het-hang">TẠM HẾT HÀNG</span>';
-}
+            echo '<p class="desc">'.mb_strimwidth($row['moTa'],0,80,'...').'</p>';
 
-echo '</div>';
+            /* BUTTON */
+            echo '<div class="card-actions">';
 
-        echo '<div class="title">'.$row['tenSanPham'].'</div>';
-        echo '<div class="price">';
-			if ($giamApDung > 0) {
-    echo '<span class="old-price">'.number_format($giaGoc,0,',','.').' VND</span>';
-    echo '<span class="new-price">'.number_format($giaMoi,0,',','.').' VND</span>';
-} else {
-    echo number_format($giaGoc,0,',','.').' VND';
-}
-		echo '</div>';
+                if ($isHetHang) {
+                    echo '<span class="btn-disabled">Hết hàng</span>';
+                } else {
+                    echo '<button type="button"
+                        class="btn-add-cart"
+                onclick="addToCart('.$row['maSanPham'].')">
+                            🛒
+                        </button>';
 
-        echo '<p class="desc">'.mb_strimwidth($row['moTa'],0,80,'...').'</p>';
-        echo '<div class="card-actions">';
-        //echo '<a href="product.php?id='.$row['maSanPham'].'">Xem chi tiết</a>';
-        if ($isHetHang) {
-            echo '<span class="btn-disabled">Hết hàng</span>';
-        } else {
-            echo '<a class="btn btn-outline" href="cart.php?action=add&id='.$row['maSanPham'].'" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 8px;"><img src="assets/img/addcart.png" alt="Thêm vào giỏ" style="height:20px; width:auto; display:block;"></a>';
-        }
-        echo '</div>';
+                }
+
+            echo '</div>';
+
         echo '</div>';
     }
+
 } else {
     echo '<p>Chưa có sản phẩm</p>';
 }
+
 echo '</div>';
-// END GRID
-/* ========== PAGINATION ========== */
+
+/* ================= PAGINATION ================= */
 if ($totalPages > 1) {
+
     echo '<div class="pagination">';
 
-    // << về trang đầu
     if ($page > 1) {
-        echo '<a class="page-first" href="?'.$queryStringBase.'page=1"><<</a>';
-        echo '<a class="page-prev" href="?'.$queryStringBase.'page='.($page-1).'"><</a>';
+        echo '<a href="?'.$queryStringBase.'page='.($page-1).'"><</a>';
     }
 
-    // số trang
     for ($i = 1; $i <= $totalPages; $i++) {
         $active = ($i == $page) ? 'active' : '';
-        echo '<a class="page-link '.$active.'" href="?'.$queryStringBase.'page='.$i.'">'.$i.'</a>';
+        echo '<a class="'.$active.'" href="?'.$queryStringBase.'page='.$i.'">'.$i.'</a>';
     }
 
-    // > sau 1 trang, >> cuối trang
     if ($page < $totalPages) {
-        echo '<a class="page-next" href="?'.$queryStringBase.'page='.($page+1).'">></a>';
-        echo '<a class="page-last" href="?'.$queryStringBase.'page='.$totalPages.'">>></a>';
+        echo '<a href="?'.$queryStringBase.'page='.($page+1).'">></a>';
     }
 
     echo '</div>';
 }
 ?>
+
+<script>
+function addToCart(id) {
+    fetch("cart.php?action=add&id=" + id)
+    .then(res => res.text())
+    .then(() => {
+        alert("Đã thêm vào giỏ hàng!");
+    })
+    .catch(() => {
+        alert("Có lỗi xảy ra!");
+    });
+}
+</script>

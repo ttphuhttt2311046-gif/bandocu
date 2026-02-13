@@ -242,7 +242,6 @@ $resultReview=$listReview->get_result();
     <source src="assets/video/<?= htmlspecialchars($product['video']) ?>"
             type="video/mp4">
   </video>
-  <button id="toggleSound">🔇</button>
 <?php endif; ?>
 
 <img id="mainImage"
@@ -309,30 +308,42 @@ Còn <?= $product['soLuong'] ?></p>
 </main>
 
 <script>
-const mainImg=document.getElementById('mainImage');
-const mainVideo=document.getElementById('mainVideo');
+const mainImg = document.getElementById('mainImage');
+const mainVideo = document.getElementById('mainVideo');
 
-document.querySelectorAll('.thumb-img').forEach(i=>{
-  i.onclick=()=>{
-    if(mainVideo){
-      mainVideo.pause();
-      mainVideo.classList.remove('active');
-    }
-    mainImg.src=i.src;
-    mainImg.classList.add('active');
-  }
-});
+if(mainImg){
 
-document.querySelector('.thumb-video')?.addEventListener('click',()=>{
-  mainImg.classList.remove('active');
-  mainVideo.classList.add('active');
-  mainVideo.play();
-});
+    // 👉 Lưu ảnh chính ban đầu
+    const originalImage = mainImg.src;
 
-document.getElementById('toggleSound')?.addEventListener('click',()=>{
-  mainVideo.muted=!mainVideo.muted;
-});
+    document.querySelectorAll('.thumb-img').forEach(i=>{
+        i.addEventListener('click', function(){
+
+            if(mainVideo){
+                mainVideo.pause();
+                mainVideo.classList.remove('active');
+            }
+
+            // Nếu click lại chính ảnh đang hiển thị → quay về ảnh gốc
+            if(mainImg.src === this.src){
+                mainImg.src = originalImage;
+            } else {
+                mainImg.src = this.src;
+            }
+
+            mainImg.classList.add('active');
+        });
+    });
+
+    // Nếu có video
+    document.querySelector('.thumb-video')?.addEventListener('click',()=>{
+        mainImg.classList.remove('active');
+        mainVideo.classList.add('active');
+        mainVideo.play();
+    });
+}
 </script>
+
 <!-- =================== REVIEW SECTION =================== -->
 <section id="reviews" class="review-box">
 
