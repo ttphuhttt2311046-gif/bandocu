@@ -1,0 +1,256 @@
+- timkiem.php - phantrang.php - index.php
+ + thay chỗ btn mũi tên thành <button type="submit" class="btn-find" style="display:inline-flex; align-items:center; justify-content:center; padding:9px 8px; border:none; background:#1da1f2;">
+            <img src="assets/img/find.png" alt="Tìm" style="height:40px; width:66; display:block;">
+ + thay echo thêm vào giỏ thành echo '<a class="btn btn-outline" href="cart.php?action=add&id='.$row['maSanPham'].'" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 8px;"><img src="assets/img/addcart.png" alt="Thêm vào giỏ" style="height:20px; width:auto; display:block;"></a>';
+ - product.phpp
+ thêm dưới người bán ở php
+ /* ===== TÍNH GIẢM GIÁ ===== */
+$giamApDung = 0;
+$giaMoi = $product['gia'] ?? 0;
+if ($product) {
+    $giaGoc = $product['gia'];
+    $giamCaNhan = intval($product['giamGia']);
+    $giamSuKien = 0;
+    
+    $now = date('Y-m-d H:i:s');
+    $eventSql = "SELECT phanTramGiam FROM sukien_giamgia 
+                 WHERE trangThai = 1 AND batDau <= '$now' AND ketThuc >= '$now' LIMIT 1";
+    $eventRes = $conn->query($eventSql);
+    if ($eventRes && $eventRes->num_rows > 0) {
+        $event = $eventRes->fetch_assoc();
+        if ($product['tuChoiSuKien'] == 0) {
+            $giamSuKien = intval($event['phanTramGiam']);
+        }
+    }
+    
+    $giamApDung = max($giamCaNhan, $giamSuKien);
+    $giaMoi = $giaGoc * (100 - $giamApDung) / 100;
+}
+ + thay nguyên cái div price ở cột phải
+ <div class="price">
+      <?php if ($giamApDung > 0): ?>
+        <span style="text-decoration: line-through; color: #999;">
+          <?php echo number_format($product['gia'],0,',','.'); ?> ₫
+        </span>
+        <br>
+        <span style="color: red; font-size: 24px; font-weight: bold;">
+          <?php echo number_format($giaMoi,0,',','.'); ?> ₫
+        </span>
+        <span style="background: red; color: white; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-size: 18px;">
+          -<?php echo $giamApDung; ?>%
+        </span>
+      <?php else: ?>
+        <?php echo number_format($product['gia'],0,',','.'); ?> ₫
+      <?php endif; ?>
+    </div>
+
+- timkiem
+thay if result ở dưới container thành cái này
+if ($result && $result->num_rows > 0) {
+      while ($row = $result->fetch_assoc()) {
+          $img = 'assets/img/' . ($row['hinhAnh'] ?: 'placeholder.png');
+          
+          // TÍNH GIẢM GIÁ
+          $giaGoc = $row['gia'];
+          $giamCaNhan = intval($row['giamGia']);
+          $giamSuKien = 0;
+          
+          $now = date('Y-m-d H:i:s');
+          $eventSql = "SELECT phanTramGiam FROM sukien_giamgia 
+                       WHERE trangThai = 1 AND batDau <= '$now' AND ketThuc >= '$now' LIMIT 1";
+          $eventRes = $conn->query($eventSql);
+          if ($eventRes && $eventRes->num_rows > 0) {
+              $event = $eventRes->fetch_assoc();
+              if ($row['tuChoiSuKien'] == 0) {
+                  $giamSuKien = intval($event['phanTramGiam']);
+              }
+          }
+          
+          $giamApDung = max($giamCaNhan, $giamSuKien);
+          $giaMoi = $giaGoc * (100 - $giamApDung) / 100;
+          
+          echo '<div class="card" onclick="window.location.href=\'product.php?id='.$row['maSanPham'].'\'">';
+          echo '<div class="thumb"><img src="'.htmlspecialchars($img).'" alt="'.htmlspecialchars($row['tenSanPham']).'"></div>';
+          echo '<div class="meta">';
+          echo '<div class="title">'.htmlspecialchars($row['tenSanPham']).'</div>';
+          
+          if ($giamApDung > 0) {
+              echo '<div class="price">';
+              echo '<span style="text-decoration:line-through; color:#999;">'.number_format($giaGoc,0,',','.').' VND</span><br>';
+              echo '<span style="color:red; font-weight:bold;">'.number_format($giaMoi,0,',','.').' VND</span>';
+              echo '</div>';
+          } else {
+              echo '<div class="price">'.number_format($giaGoc,0,',','.').' VND</div>';
+          }
+          
+          echo '</div>';
+          echo '<p class="desc">'.(strlen($row['moTa']) > 80
+              ? htmlspecialchars(substr($row['moTa'],0,80)).'...'
+              : htmlspecialchars($row['moTa'])).'</p>';
+          echo '<div class="card-actions">';
+          echo '<a class="btn btn-outline" href="cart.php?action=add&id='.$row['maSanPham'].'" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 8px;"><img src="assets/img/addcart.png" alt="Thêm vào giỏ" style="height:20px; width:auto; display:block;"></a>';
+          echo '</div>';
+          echo '</div>';
+      }
+  } else {
+      echo '<p>Không tìm thấy sản phẩm phù hợp.</p>';
+  }
+- cart.php
+ sửa thanh toán checkout
+ if ($action === 'checkout') {
+    if (isset($_SESSION['checkout_lock'])) {
+        echo "<script>alert('Đơn hàng đang được xử lý, vui lòng chờ!'); window.location='index.php';</script>";
+        exit;
+    }
+    $_SESSION['checkout_lock'] = true;
+
+    if (empty($_SESSION['cart'])) {
+        unset($_SESSION['checkout_lock']);
+        echo "<script>alert('Giỏ hàng trống!'); window.location='index.php';</script>";
+        exit;
+    }
+
+    // Tính tổng với giá đã giảm
+    $tongTien = 0;
+    foreach ($_SESSION['cart'] as $item) {
+        $tongTien += $item['price'] * $item['qty'];
+    }
+
+    $maNguoiMua = intval($_SESSION['user_id']);
+    $ngayDat = date('Y-m-d');
+    $trangThai = "Chờ xử lý";
+
+    $conn->begin_transaction();
+
+    try {
+        $stmt = $conn->prepare("INSERT INTO donhang (ngayDat, tongTien, trangThai, maNguoiMua) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("sdsi", $ngayDat, $tongTien, $trangThai, $maNguoiMua);
+
+        if (!$stmt->execute()) {
+            throw new Exception("Lỗi khi lưu đơn hàng: " . $stmt->error);
+        }
+        $maDonHang = $conn->insert_id;
+        $stmt->close();
+
+        $dsNguoiBan = [];
+        foreach ($_SESSION['cart'] as $item) {
+            $id = intval($item['id']);
+            $qty = intval($item['qty']);
+            $gia = floatval($item['price']);
+            
+            $seller_stmt = $conn->prepare("SELECT maNguoiBan, soLuong FROM sanpham WHERE maSanPham = ? FOR UPDATE");
+            $seller_stmt->bind_param("i", $id);
+            $seller_stmt->execute();
+            $prod_info = $seller_stmt->get_result()->fetch_assoc();
+            $seller_stmt->close();
+
+            if (!$prod_info) {
+                throw new Exception("Sản phẩm #{$id} không tồn tại.");
+            }
+            $maNguoiBan = intval($prod_info['maNguoiBan'] ?? 0);
+            $soLuongTon = intval($prod_info['soLuong']);
+            $dsNguoiBan[$maNguoiBan] = true;
+            
+            if ($qty > $soLuongTon) {
+                throw new Exception("Số lượng sản phẩm #{$id} vượt quá tồn kho (còn {$soLuongTon}).");
+            }
+
+            $sql = $conn->prepare("
+                INSERT INTO chitietdonhang (maDonHang, maSanPham, maNguoiBan, soLuong, donGia)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $sql->bind_param("iiiid", $maDonHang, $id, $maNguoiBan, $qty, $gia);
+            if (!$sql->execute()) {
+                $sql->close();
+                throw new Exception("Lỗi lưu chi tiết đơn hàng: " . $sql->error);
+            }
+            $sql->close();
+
+            $update = $conn->prepare("UPDATE sanpham SET soLuong = soLuong - ? WHERE maSanPham = ?");
+            $update->bind_param("ii", $qty, $id);
+            if (!$update->execute()) {
+                $update->close();
+                throw new Exception("Lỗi cập nhật tồn kho: " . $update->error);
+            }
+            $update->close();
+        }
+        
+        $conn->commit();
+    + chỗ unset ở dưới
+    unset($_SESSION['checkout_lock']);
+        $_SESSION['cart'] = [];
+
+        echo "<script>alert('Đặt hàng thành công! Đơn hàng và chi tiết đã được lưu.'); window.location='index.php';</script>";
+        exit;
+    } catch (Exception $e) {
+        $conn->rollback();
+        unset($_SESSION['checkout_lock']);
+        $err = htmlspecialchars($e->getMessage());
+        echo "<script>alert('Lỗi khi lưu đơn hàng: {$err}'); window.location='cart.php';</script>";
+        exit;
+    }
+}
+    + thêm vào giỏ sửa từ stmt
+    $stmt = $conn->prepare("
+        SELECT maSanPham, tenSanPham, gia, hinhAnh, soLuong, giamGia, tuChoiSuKien
+        FROM sanpham
+        WHERE maSanPham = ?
+    ");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $p   = $res->fetch_assoc();
+    $stmt->close();
+
+    if (!$p) {
+        echo "<script>alert('Không tìm thấy sản phẩm!'); window.location='index.php';</script>";
+        exit;
+    }
+
+    // TÍNH GIÁ ĐÃ GIẢM
+    $giaGoc = $p['gia'];
+    $giamCaNhan = intval($p['giamGia']);
+    $giamSuKien = 0;
+    
+    $now = date('Y-m-d H:i:s');
+    $eventSql = "SELECT phanTramGiam FROM sukien_giamgia 
+                 WHERE trangThai = 1 AND batDau <= '$now' AND ketThuc >= '$now' LIMIT 1";
+    $eventRes = $conn->query($eventSql);
+    if ($eventRes && $eventRes->num_rows > 0) {
+        $event = $eventRes->fetch_assoc();
+        if ($p['tuChoiSuKien'] == 0) {
+            $giamSuKien = intval($event['phanTramGiam']);
+        }
+    }
+    
+    $giamApDung = max($giamCaNhan, $giamSuKien);
+    $giaMoi = $giaGoc * (100 - $giamApDung) / 100;
+
+    $soLuongTon = intval($p['soLuong']);
+    if ($soLuongTon <= 0) {
+        echo "<script>alert('Sản phẩm đã hết hàng!'); window.location='index.php';</script>";
+        exit;
+    }
+
+    $currentQty = $_SESSION['cart'][$id]['qty'] ?? 0;
+    $newQty = $currentQty + $qty;
+
+    if ($newQty > $soLuongTon) {
+        echo "<script>
+            alert('Số lượng vượt quá tồn kho! Còn {$soLuongTon} sản phẩm.');
+            window.location='product.php?id={$id}';
+        </script>";
+        exit;
+    }
+
+    $_SESSION['cart'][$id] = [
+        'id'    => $p['maSanPham'],
+        'name'  => $p['tenSanPham'],
+        'price' => $giaMoi,
+        'image' => $p['hinhAnh'],
+        'qty'   => $newQty
+    ];
+
+    header("Location: cart.php");
+    exit;
+}

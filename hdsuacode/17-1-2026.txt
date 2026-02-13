@@ -1,0 +1,123 @@
+17/1/2026
+- thêm file mobile-dashboard.css dô admin/css/ pull là tự có
+
+- thêm <meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="css/mobile-dashboard.css" rel="stylesheet"> dô head của dashboard.php
+- Trong Topbar (<nav class="navbar ...">) thêm trước <ul class="navbar-nav ml-auto">
+<button id="sidebarToggleTop"
+        class="btn btn-link d-md-none rounded-circle mr-3">
+  <i class="fa fa-bars"></i>
+</button>
+- users.php 
+  + dưới h1 thêm <!-- MOBILE COLUMN HEADER -->
+<div class="mobile-column-header">
+  <span>ID</span>
+  <span>Trạng thái</span>
+  <span>Tên</span>
+  <span>Vai trò</span>
+  <span></span>
+</div> <-------- </div> này nè
+  + dưới </div> của + hồi nảy giữa <thead class="thead-dark"> đổi thành <div class="mobile-user-table"> nhớ đống </div> ở dưới
+  	<table class="table mobile-table">
+  + Thay vòng while thành dạng này 
+<?php while ($u = $users->fetch_assoc()): ?>
+<tr class="user-row" data-id="<?= $u['maTaiKhoan'] ?>">
+    <td><?= $u['maTaiKhoan'] ?></td>
+    <td>
+        <?= $u['trangThai'] == 1
+            ? '<span class="badge badge-success">Hoạt động</span>'
+            : '<span class="badge badge-danger">Bị khóa</span>' ?>
+    </td>
+    <td><?= htmlspecialchars($u['tenNguoiDung']) ?></td>
+    <td><?= htmlspecialchars($u['tenDangNhap']) ?></td>
+    <td><?= $u['vaitro'] ?></td>
+    <td><?= htmlspecialchars($u['soDienThoai']) ?></td>
+    <td><?= htmlspecialchars($u['diaChi']) ?></td>
+    <td class="action-cell">
+  <div class="desktop-actions">
+    <button class="btn btn-danger btn-sm"
+      onclick="manageUser('delete', <?= $u['maTaiKhoan'] ?>)">Xóa</button>
+
+    <?php if ($u['trangThai'] == 1): ?>
+      <button class="btn btn-warning btn-sm"
+        onclick="toggleUser(<?= $u['maTaiKhoan'] ?>,'lock')">Khóa</button>
+    <?php else: ?>
+      <button class="btn btn-success btn-sm"
+        onclick="toggleUser(<?= $u['maTaiKhoan'] ?>,'unlock')">Mở</button>
+    <?php endif; ?>
+  </div>
+</td>
+</tr>
+
+<!-- HÀNG CHI TIẾT (ẨN) -->
+<tr class="user-detail">
+    <td colspan="8">
+        <div class="user-detail-box">
+            <div>Email: <?= htmlspecialchars($u['tenDangNhap']) ?></div>
+            <div>Số điện thoại: <?= htmlspecialchars($u['soDienThoai']) ?></div>
+            <div>Địa chỉ: <?= htmlspecialchars($u['diaChi']) ?></div>
+
+            <div class="mt-2 d-flex gap-2">
+                <button class="btn btn-danger btn-sm"
+  onclick="event.stopPropagation(); manageUser('delete', <?= $u['maTaiKhoan'] ?>)">
+  Xóa
+</button>
+
+                <?php if ($u['trangThai'] == 1): ?>
+                    <button class="btn btn-warning btn-sm"
+  onclick="event.stopPropagation(); toggleUser(<?= $u['maTaiKhoan'] ?>,'lock')">
+  Khóa
+</button>
+
+                <?php else: ?>
+                    <button class="btn btn-success btn-sm"
+                        onclick="event.stopPropagation(); toggleUser(<?= $u['maTaiKhoan'] ?>,'unlock')">
+                        Mở khóa
+                    </button>
+                <?php endif; ?>
+            </div>
+        </div>
+    </td>
+</tr>
+<?php endwhile; ?>
+  + sửa js ở cuối file 
+<script>
+let isActionProcessing = false;
+
+function loadPage(page){
+  $("#ajax-content").load(page);
+}
+
+function toggleUser(id, action){
+  isActionProcessing = true;
+  $.get("users.php?" + action + "=" + id, function(res){
+    if(res === "OK"){
+      loadPage("users.php");
+      setTimeout(()=>isActionProcessing=false,400);
+    }
+  });
+}
+
+function manageUser(action, id){
+  isActionProcessing = true;
+  $.get("users_manager.php?" + action + "=" + id, function(res){
+    if(res === "OK"){
+      loadPage("users.php");
+      setTimeout(()=>isActionProcessing=false,400);
+    }
+  });
+}
+
+$(document).on("click", ".mobile-user-table .user-row", function(e){
+
+  if (window.innerWidth > 768) return;
+  if (isActionProcessing) return;
+  if ($(e.target).closest("button,a").length) return;
+
+  let $detail = $(this).next(".user-detail");
+
+  $(".mobile-user-table .user-detail").not($detail).slideUp(150);
+  $detail.stop(true,true).slideToggle(150);
+});
+</script>
+

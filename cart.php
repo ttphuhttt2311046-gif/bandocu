@@ -1,0 +1,453 @@
+<?php 
+// Cart: thêm, cập nhật (AJAX), xóa, checkout (lưu donhang + chitietdonhang, gửi thông báo người bán)
+ini_set('session.cookie_path', '/');
+session_start();
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+include "db.php";
+
+$action = isset($_GET['action']) ? $_GET['action'] : '';
+if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
+
+// =========================
+// THÊM SẢN PHẨM VÀO GIỎ
+// =========================
+if ($action === 'add') {
+
+    // 🔒 CHƯA ĐĂNG NHẬP → KHÔNG CHO THÊM GIỎ
+    if (!isset($_SESSION['user_id'])) {
+        echo "<script>
+            alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!');
+            window.location='admin/login.php';
+        </script>";
+        exit;
+    }
+
+    $id  = intval($_GET['id'] ?? 0);
+    $qty = isset($_GET['qty']) ? max(1, intval($_GET['qty'])) : 1;
+
+    $stmt = $conn->prepare("
+        SELECT maSanPham, tenSanPham, gia, hinhAnh, soLuong, giamGia, thamGiaSuKien
+        FROM sanpham
+        WHERE maSanPham = ?
+    ");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $p   = $res->fetch_assoc();
+    $stmt->close();
+
+    if (!$p) {
+        echo "<script>alert('Không tìm thấy sản phẩm!'); window.location='index.php';</script>";
+        exit;
+    }
+
+    // TÍNH GIÁ ĐÃ GIẢM
+    $giaGoc = $p['gia'];
+    $giamCaNhan = intval($p['giamGia']);
+    $giamSuKien = 0;
+    
+    $now = date('Y-m-d H:i:s');
+    // Sửa tên cột thành mucGiamGia và bảng sukien_khuyenmai
+    $eventSql = "SELECT mucGiamGia FROM sukien_khuyenmai 
+                 WHERE trangThai = 1 AND ngayBatDau <= '$now' AND ngayKetThuc >= '$now' 
+                 ORDER BY id DESC LIMIT 1";
+    
+    $eventRes = $conn->query($eventSql);
+    if ($eventRes && $eventRes->num_rows > 0) {
+        $event = $eventRes->fetch_assoc();
+        // Kiểm tra điều kiện tham gia (cột thamGiaSuKien trong bảng sanpham)
+        if (intval($p['thamGiaSuKien']) === 1) { 
+            $giamSuKien = intval($event['mucGiamGia']);
+        }
+    }
+    
+    $giamApDung = max($giamCaNhan, $giamSuKien);
+    $giaMoi = $giaGoc * (100 - $giamApDung) / 100;
+
+    $soLuongTon = intval($p['soLuong']);
+    if ($soLuongTon <= 0) {
+        echo "<script>alert('Sản phẩm đã hết hàng!'); window.location='index.php';</script>";
+        exit;
+    }
+
+    $currentQty = $_SESSION['cart'][$id]['qty'] ?? 0;
+    $newQty = $currentQty + $qty;
+
+    if ($newQty > $soLuongTon) {
+        echo "<script>
+            alert('Số lượng vượt quá tồn kho! Còn {$soLuongTon} sản phẩm.');
+            window.location='product.php?id={$id}';
+        </script>";
+        exit;
+    }
+
+    $_SESSION['cart'][$id] = [
+        'id'    => $p['maSanPham'],
+        'name'  => $p['tenSanPham'],
+        'price' => $giaMoi,
+        'image' => $p['hinhAnh'],
+        'qty'   => $newQty
+    ];
+
+    header("Location: cart.php");
+    exit;
+}
+
+// =========================
+// XÓA SẢN PHẨM KHỎI GIỎ
+// =========================
+if ($action === 'remove') {
+    $id = intval($_GET['id']);
+    if (isset($_SESSION['cart'][$id])) unset($_SESSION['cart'][$id]);
+    header("Location: cart.php");
+    exit;
+}
+
+// =========================
+// CẬP NHẬT GIỎ HÀNG QUA AJAX (từ CODE MỚI)
+// =========================
+if ($action === 'update-ajax' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = intval($_POST['id'] ?? 0);
+    $qty = max(1, intval($_POST['qty'] ?? 1));
+
+    // Kiểm tra tồn kho
+    $stmt = $conn->prepare("SELECT soLuong FROM sanpham WHERE maSanPham=?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $p = $res->fetch_assoc();
+    $stmt->close();
+
+    if ($p) {
+        $soLuongTon = intval($p['soLuong']);
+        if ($qty > $soLuongTon) {
+            // Nếu số lượng vượt tồn, giới hạn về tồn kho
+            $qty = $soLuongTon;
+        }
+        if (isset($_SESSION['cart'][$id])) {
+            // Nếu tồn kho bằng 0, xóa khỏi giỏ
+            if ($qty <= 0) {
+                unset($_SESSION['cart'][$id]);
+            } else {
+                $_SESSION['cart'][$id]['qty'] = $qty;
+            }
+        }
+    }
+    // Trả về mã 200 (không cần content)
+    http_response_code(200);
+    exit;
+}
+
+// =========================
+// THANH TOÁN - LƯU ĐƠN HÀNG + CHI TIẾT (giữ từ CODE CŨ, bao gồm notify seller)
+// =========================
+if ($action === 'checkout') {
+    if (isset($_SESSION['checkout_lock'])) {
+        echo "<script>alert('Đơn hàng đang được xử lý, vui lòng chờ!'); window.location='index.php';</script>";
+        exit;
+    }
+    $_SESSION['checkout_lock'] = true;
+
+    if (empty($_SESSION['cart'])) {
+        unset($_SESSION['checkout_lock']);
+        echo "<script>alert('Giỏ hàng trống!'); window.location='index.php';</script>";
+        exit;
+    }
+
+    // Tính tổng với giá đã giảm
+    $tongTien = 0;
+    foreach ($_SESSION['cart'] as $item) {
+        $tongTien += $item['price'] * $item['qty'];
+    }
+
+    $maNguoiMua = intval($_SESSION['user_id']);
+    $ngayDat = date('Y-m-d');
+    $trangThai = "Chờ xử lý";
+
+    $conn->begin_transaction();
+
+    try {
+        $stmt = $conn->prepare("INSERT INTO donhang (ngayDat, tongTien, trangThai, maNguoiMua) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("sdsi", $ngayDat, $tongTien, $trangThai, $maNguoiMua);
+
+        if (!$stmt->execute()) {
+            throw new Exception("Lỗi khi lưu đơn hàng: " . $stmt->error);
+        }
+        $maDonHang = $conn->insert_id;
+        $stmt->close();
+
+        $dsNguoiBan = [];
+        foreach ($_SESSION['cart'] as $item) {
+            $id = intval($item['id']);
+            $qty = intval($item['qty']);
+            $gia = floatval($item['price']);
+            
+            $seller_stmt = $conn->prepare("SELECT maNguoiBan, soLuong FROM sanpham WHERE maSanPham = ? FOR UPDATE");
+            $seller_stmt->bind_param("i", $id);
+            $seller_stmt->execute();
+            $prod_info = $seller_stmt->get_result()->fetch_assoc();
+            $seller_stmt->close();
+
+            if (!$prod_info) {
+                throw new Exception("Sản phẩm #{$id} không tồn tại.");
+            }
+            $maNguoiBan = intval($prod_info['maNguoiBan'] ?? 0);
+            $soLuongTon = intval($prod_info['soLuong']);
+            $dsNguoiBan[$maNguoiBan] = true;
+            
+            if ($qty > $soLuongTon) {
+                throw new Exception("Số lượng sản phẩm #{$id} vượt quá tồn kho (còn {$soLuongTon}).");
+            }
+
+            $sql = $conn->prepare("
+                INSERT INTO chitietdonhang (maDonHang, maSanPham, maNguoiBan, soLuong, donGia)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+            $sql->bind_param("iiiid", $maDonHang, $id, $maNguoiBan, $qty, $gia);
+            if (!$sql->execute()) {
+                $sql->close();
+                throw new Exception("Lỗi lưu chi tiết đơn hàng: " . $sql->error);
+            }
+            $sql->close();
+
+            $update = $conn->prepare("UPDATE sanpham SET soLuong = soLuong - ? WHERE maSanPham = ?");
+            $update->bind_param("ii", $qty, $id);
+            if (!$update->execute()) {
+                $update->close();
+                throw new Exception("Lỗi cập nhật tồn kho: " . $update->error);
+            }
+            $update->close();
+        }
+        
+        $conn->commit();
+		/* =========================
+  		 GỬI TIN NHẮN SAU COMMIT
+  			 ========================= */
+
+		// ===== GỬI 1 TIN DUY NHẤT CHO MỖI NGƯỜI BÁN =====
+		$nguoiMuaTen   = $_SESSION['tenNguoiDung'] ?? 'Khách hàng';
+		$emailNguoiMua = $_SESSION['email'] ?? '';
+		$noiDungSeller =
+		"ĐƠN HÀNG MỚI\n".
+		"Người mua: {$nguoiMuaTen}\n".
+		"Email: {$emailNguoiMua}\n".
+		"Tổng tiền: ".number_format($tongTien,0,',','.')." VNĐ\n".
+		"Mã đơn hàng: #{$maDonHang}";
+
+		$stmtSeller = $conn->prepare("
+    		INSERT INTO nhantin (noiDung, maNguoiGui, maNguoiNhan, trangThai)
+    		VALUES (?, ?, ?, 'chua_xem')");
+
+		foreach (array_keys($dsNguoiBan) as $maNguoiBan) {
+    	$stmtSeller->bind_param("sii", $noiDungSeller, $maNguoiMua, $maNguoiBan);
+    	$stmtSeller->execute();
+		}
+		$stmtSeller->close();
+
+		// ===== GỬI 1 TIN CHO NGƯỜI MUA =====
+		$noiDungBuyer =
+		"Bạn đã đặt đơn hàng thành công!\n".
+		"Mã đơn hàng: #{$maDonHang}\n".
+		"Tổng tiền: ".number_format($tongTien,0,',','.')." VNĐ";
+
+		$stmtBuyer = $conn->prepare("
+    		INSERT INTO nhantin (noiDung, maNguoiGui, maNguoiNhan, trangThai)
+    		VALUES (?, ?, ?, 'da_xem')");
+		$maNguoiGui = $maNguoiMua;
+		$stmtBuyer->bind_param("sii", $noiDungBuyer, $maNguoiGui, $maNguoiMua);
+		$stmtBuyer->execute();
+		$stmtBuyer->close();
+unset($_SESSION['checkout_lock']);
+        $_SESSION['cart'] = [];
+
+        echo "<script>alert('Đặt hàng thành công! Đơn hàng và chi tiết đã được lưu.'); window.location='index.php';</script>";
+        exit;
+    } catch (Exception $e) {
+        $conn->rollback();
+        unset($_SESSION['checkout_lock']);
+        $err = htmlspecialchars($e->getMessage());
+        echo "<script>alert('Lỗi khi lưu đơn hàng: {$err}'); window.location='cart.php';</script>";
+        exit;
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giỏ hàng</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="logo-title">
+  <h1><a href="index.php">Shop Đồ Cũ</a></h1>
+</div>
+      <div class="nav">
+        <?php
+$cartCount = 0;
+if (!empty($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $c) {
+        $cartCount += $c['qty'] ?? 0;
+    }
+}
+?>
+
+        <a href="cart.php">🛒Giỏ hàng (<?php echo isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'qty')) : 0; ?>)</a>
+        <?php if (isset($_SESSION['user_id'])): ?>
+            <?php if (isset($_SESSION['vaitro']) && ($_SESSION['vaitro'] === 'seller' || $_SESSION['vaitro'] === 'admin')): ?>
+                <a href="admin/index.php">Quản lý sản phẩm</a>
+            <?php endif; ?>
+<span style="color:#fff;">
+  Xin chào, <?php echo htmlspecialchars($_SESSION['tenNguoiDung'] ?? ''); ?>
+</span>
+            <a href="admin/logout.php">Đăng xuất</a>
+        <?php else: ?>
+            <a href="admin/login.php">Đăng nhập</a>
+        <?php endif; ?>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Giỏ hàng của bạn</h2>
+
+    <?php if (!empty($_SESSION['cart'])): ?>
+      <!-- form giữ lại để fallback (submit truyền thống) -->
+      <table class="cart-table">
+  <thead>
+    <tr>
+      <th>Ảnh</th>
+      <th>Sản phẩm</th>
+      <th>Giá</th>
+      <th>Số lượng</th>
+      <th>Tạm tính</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  <?php
+    $total = 0;
+    foreach ($_SESSION['cart'] as $id => $item):
+      $sub = $item['price'] * $item['qty'];
+      $total += $sub;
+  ?>
+    <tr>
+      <td><img src="assets/img/<?php echo htmlspecialchars($item['image']); ?>" width="80"></td>
+      <td><?php echo htmlspecialchars($item['name']); ?></td>
+      <td class="price"><?php echo number_format($item['price'],0,',','.'); ?> VND</td>
+
+      <td>
+        <input type="number"
+               class="qty-input"
+               data-id="<?php echo $id; ?>"
+               value="<?php echo $item['qty']; ?>"
+               min="1"
+               style="width:70px;">
+      </td>
+
+      <td class="sub-total"><?php echo number_format($sub,0,',','.'); ?> VND</td>
+
+      <td>
+        <a class="btn btn-delete" href="#" onclick="return confirmDelete(<?php echo $id; ?>)">Xóa</a>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+  </tbody>
+</table>
+
+<div class="cart-summary">
+  <strong>Tổng cộng: <?php echo number_format($total,0,',','.'); ?> VND</strong>
+</div>
+
+
+<div class="cart-actions">
+
+  <a class="btn btn-checkout" href="checkout.php">Thanh toán</a>
+
+</div>
+
+<script>
+// JS tự động cập nhật số lượng và tổng tiền (từ CODE MỚI)
+// Option A: ô số lượng có min=1, xoá bằng nút Xóa
+document.addEventListener('DOMContentLoaded', function(){
+    function sanitizeNumberFromText(str){
+        return parseFloat(str.replace(/\D/g,'')) || 0;
+    }
+
+    const qtyInputs = document.querySelectorAll('.qty-input');
+    qtyInputs.forEach(input => {
+        input.addEventListener('input', function(){
+            let id = this.dataset.id;
+            let qty = parseInt(this.value);
+            if (!Number.isFinite(qty) || qty < 1) qty = 1;
+            this.value = qty;
+
+            let tr = this.closest('tr');
+            let price = sanitizeNumberFromText(tr.querySelector('.price').textContent);
+            tr.querySelector('.sub-total').textContent = (price * qty).toLocaleString('vi-VN') + ' VND';
+
+            let total = 0;
+            document.querySelectorAll('.sub-total').forEach(td => {
+                total += sanitizeNumberFromText(td.textContent);
+            });
+            document.querySelector('.cart-summary strong').textContent = 'Tổng cộng: ' + total.toLocaleString('vi-VN') + ' VND';
+
+            // gửi AJAX cập nhật session (non-blocking)
+            fetch('cart.php?action=update-ajax', {
+                method: 'POST',
+                headers: {'Content-Type':'application/x-www-form-urlencoded'},
+                body: 'id=' + encodeURIComponent(id) + '&qty=' + encodeURIComponent(qty)
+            }).then(response => {
+                // có thể check response.status nếu muốn hiển thị lỗi
+                if (!response.ok) {
+                    console.error('Update-ajax lỗi', response.status);
+                }
+            }).catch(err => {
+                console.error('Lỗi fetch update-ajax', err);
+            });
+        });
+
+        // optional: gửi event blur để đảm bảo cập nhật khi người dùng rời ô nhập
+        input.addEventListener('blur', function(){
+            if (this.value === '' || parseInt(this.value) < 1) {
+                this.value = 1;
+                this.dispatchEvent(new Event('input'));
+            }
+        });
+    });
+});
+
+// SweetAlert confirm delete
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'Bạn chắc chắn?',
+        text: "Bạn có thực sự muốn xóa sản phẩm này khỏi giỏ hàng?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = 'cart.php?action=remove&id=' + id;
+        }
+    });
+    return false;
+}
+
+</script>
+
+    <?php else: ?>
+      <p>Giỏ hàng trống. <a href="index.php">Quay lại cửa hàng</a></p>
+    <?php endif; ?>
+  </main>
+
+  <footer class="footer">
+    <div class="container">© <?php echo date("Y"); ?> Shop Đồ Cũ</div>
+  </footer>
+</body>

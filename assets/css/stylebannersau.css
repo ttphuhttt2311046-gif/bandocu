@@ -1,0 +1,61 @@
+/* ==============================
+   BACKGROUND BANNER TOÀN TRANG
+   ============================== */
+
+body {
+    height: 100%;
+    margin: 0;
+    padding-top: 90px;
+}
+
+body {
+    position: relative;
+}
+
+/* Banner nền phía sau */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("../img/bannersaulung.jpg"); /* ĐÚNG NHẤT */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 1; /* nếu muốn mờ thì chỉnh 0.8 */
+    z-index: -1;
+}
+
+
+/* Banner 2 bên đứng yên */
+.side-banner {
+    position: fixed;
+    top: 25%;        /* chỉnh lên xuống */
+    z-index: -1;     /* chìm sau nội dung */
+    opacity: 1;
+    pointer-events: none;
+}
+
+.side-banner img {
+    width: 200px;    /* chỉnh size */
+    height: auto;
+}
+
+/* Trái */
+.left-banner {
+    left: 0;
+}
+
+/* Phải */
+.right-banner {
+    right: 0;
+}
+
+/* Ẩn trên Mobile cho đỡ rối */
+@media (max-width: 768px) {
+    .side-banner {
+        display: none;
+    }
+}

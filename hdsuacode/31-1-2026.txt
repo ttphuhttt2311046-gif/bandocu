@@ -1,0 +1,31 @@
+pull về có nếu lỗi xem lại
+- banner.php
+    + thêm này dô 
+    <style>
+.banner-thumb {
+    max-height: 60px;
+    width: auto;
+    max-width: 180px;
+    display: block;
+}
+</style>
+- thêm file qldanhmuc
+- thêm cột thu_tu bảng danhmuc
+ALTER TABLE danhmuc ADD COLUMN thu_tu INT DEFAULT 0;
+- index.php
+ghi đè danh mục 
+<!-- 🔹 DANH MỤC -->
+<div class="category-bar">
+<?php
+// THÊM ORDER BY thu_tu
+$cats = $conn->query("SELECT maDanhMuc, tenDanhMuc FROM danhmuc ORDER BY thu_tu ASC, maDanhMuc ASC");
+$allActive = !isset($_GET['cat']) ? 'active' : '';
+echo '<a href="index.php" class="cat-item all '.$allActive.'">Tất cả</a>';
+
+if ($cats && $cats->num_rows > 0) {
+    while ($cat = $cats->fetch_assoc()) {
+        $catActive = (isset($_GET['cat']) && $_GET['cat'] == $cat['maDanhMuc']) ? 'active' : '';
+        echo '<a href="?cat='.$cat['maDanhMuc'].'" class="cat-item '.$catActive.'">'.$cat['tenDanhMuc'].'</a>';
+    }
+}
+-phantrang.php
