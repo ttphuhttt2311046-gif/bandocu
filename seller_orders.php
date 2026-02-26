@@ -98,11 +98,9 @@ function hienThiTrangThai($status) {
             <td>
                 <a href="seller_order_detail.php?id=<?= $r['maDonHang'] ?>">Xem</a>
 
-                <?php if ($r['trangThai'] != 2 && $r['trangThai'] != 3): ?>
-                    | <a href="update_order_status.php?id=<?= $r['maDonHang'] ?>&status=1">Đang giao</a>
-                    | <a href="update_order_status.php?id=<?= $r['maDonHang'] ?>&status=2">Hoàn thành</a>
-                    | <a href="update_order_status.php?id=<?= $r['maDonHang'] ?>&status=3">Hủy</a>
-                <?php endif; ?>
+                <?php if ($r['trangThai'] == 0): ?>
+    | <a href="update_order_status.php?id=<?= $r['maDonHang'] ?>&status=1">🚚 Xác nhận giao hàng</a>
+<?php endif; ?>
             </td>
         </tr>
         <?php endwhile; ?>

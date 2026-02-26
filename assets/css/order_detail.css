@@ -82,3 +82,17 @@ img {
 .back-btn:hover {
     background: #e74c3c;
 }
+/* ===== NÚT ĐÃ NHẬN HÀNG ===== */
+.confirm-btn {
+     padding: 10px 20px;
+    background: #1aa22a;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.confirm-btn:hover {
+      background: #43c45d;
+}

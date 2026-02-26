@@ -2,6 +2,10 @@
 session_start();
 include "db.php";
 
+if (!isset($_SESSION['user_id'])) {
+    die("Bạn chưa đăng nhập");
+}
+
 if (!isset($_GET['id'])) {
     die("Không tìm thấy đơn hàng");
 }
@@ -26,24 +30,27 @@ if (!$donhang) {
    HÀM HIỂN THỊ TRẠNG THÁI
 ============================= */
 function hienThiTrangThai($status){
-    switch((string)$status){
-        case "0": return "Chờ xác nhận";
-        case "1": return "Đang giao";
-        case "2": return "Hoàn thành";
-        case "3": return "Đã hủy";
-        case "cho_xac_nhan": return "Chờ xác nhận";
-        case "dang_giao": return "Đang giao";
-        case "hoan_thanh": return "Hoàn thành";
-        case "da_huy": return "Đã hủy";
+    switch((int)$status){
+        case 0: return "Chờ xác nhận";
+        case 1: return "Đang giao";
+        case 2: return "Hoàn thành";
+        case 3: return "Đã hủy";
     }
-    return "Chờ xác nhận";
+    return "Không xác định";
 }
 
 /* =============================
-   KIỂM TRA ĐƯỢC HỦY
+   ĐƯỢC HỦY KHI CHỜ XÁC NHẬN
 ============================= */
 function duocHuy($status){
-    return ($status == 0 || $status === "0" || $status == "cho_xac_nhan");
+    return ((int)$status === 0);
+}
+
+/* =============================
+   ĐƯỢC XÁC NHẬN ĐÃ NHẬN
+============================= */
+function duocNhanHang($status){
+    return ((int)$status === 1);
 }
 
 /* =============================
@@ -51,12 +58,20 @@ function duocHuy($status){
 ============================= */
 if (isset($_POST['huydon']) && duocHuy($donhang['trangThai'])) {
 
-    if (is_numeric($donhang['trangThai'])) {
-        $update = $conn->prepare("UPDATE donhang SET trangThai = 3 WHERE maDonHang = ?");
-    } else {
-        $update = $conn->prepare("UPDATE donhang SET trangThai = 'da_huy' WHERE maDonHang = ?");
-    }
+    $update = $conn->prepare("UPDATE donhang SET trangThai = 3 WHERE maDonHang = ?");
+    $update->bind_param("i", $maDonHang);
+    $update->execute();
 
+    header("Location: order_detail.php?id=" . $maDonHang);
+    exit();
+}
+
+/* =============================
+   XỬ LÝ ĐÃ NHẬN HÀNG
+============================= */
+if (isset($_POST['danhan']) && duocNhanHang($donhang['trangThai'])) {
+
+    $update = $conn->prepare("UPDATE donhang SET trangThai = 2 WHERE maDonHang = ?");
     $update->bind_param("i", $maDonHang);
     $update->execute();
 
@@ -79,7 +94,6 @@ $stmt_ct->bind_param("i", $maDonHang);
 $stmt_ct->execute();
 $result_ct = $stmt_ct->get_result();
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -112,6 +126,14 @@ $result_ct = $stmt_ct->get_result();
 </form>
 <?php endif; ?>
 
+<?php if (duocNhanHang($donhang['trangThai'])): ?>
+<form method="POST" onsubmit="return confirm('Bạn đã nhận được hàng?');">
+    <button type="submit" name="danhan" class="confirm-btn">
+        ✅ Đã nhận hàng
+    </button>
+</form>
+<?php endif; ?>
+
 <table>
 <tr>
     <th>Hình ảnh</th>
@@ -124,15 +146,7 @@ $result_ct = $stmt_ct->get_result();
 <?php while($row = $result_ct->fetch_assoc()): ?>
 <tr>
     <td>
-        <?php
-        $imgPath = "assets/img/" . $row['hinhAnh'];
-        if (!empty($row['hinhAnh']) && file_exists($imgPath)):
-        ?>
-            <img src="<?= $imgPath ?>" 
-                 onerror="this.src='assets/css/no-image.png'">
-        <?php else: ?>
-            <img src="assets/css/no-image.png">
-        <?php endif; ?>
+        <img src="assets/img/<?= $row['hinhAnh'] ?>" width="80">
     </td>
     <td><?= htmlspecialchars($row['tenSanPham']) ?></td>
     <td><?= number_format($row['donGia']) ?> đ</td>
@@ -140,12 +154,10 @@ $result_ct = $stmt_ct->get_result();
     <td><?= number_format($row['thanhTien']) ?> đ</td>
 </tr>
 <?php endwhile; ?>
-
 </table>
 
 <a href="orders.php" class="back-btn">← Quay lại</a>
 
 </div>
-
 </body>
 </html>
