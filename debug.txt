@@ -1,0 +1,697 @@
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 5
+PARAMS: Array
+(
+    [0] => %xe%
+    [1] => %xe%
+    [2] => %đạp%
+    [3] => %đạp%
+)
+
+ROWS: 5
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 5
+PARAMS: Array
+(
+    [0] => %xe%
+    [1] => %xe%
+    [2] => %đạp%
+    [3] => %đạp%
+)
+
+ROWS: 5
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 5
+PARAMS: Array
+(
+    [0] => %xe%
+    [1] => %xe%
+    [2] => %điện%
+    [3] => %điện%
+)
+
+ROWS: 5
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe đạp%
+    [1] => %xe đạp%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+)
+
+ROWS: 3
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe đạp địa hình bianchi%
+    [1] => %xe đạp địa hình bianchi%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+    [6] => %địa%
+    [7] => %địa%
+    [8] => %hình%
+    [9] => %hình%
+    [10] => %bianchi%
+    [11] => %bianchi%
+)
+
+ROWS: 1
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %còn xe đạp đua%
+    [1] => %còn xe đạp đua%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+    [6] => %đua%
+    [7] => %đua%
+)
+
+ROWS: 0
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %ôtô%
+    [1] => %ôtô%
+    [2] => %ôtô%
+    [3] => %ôtô%
+)
+
+ROWS: 2
+
+SQL: SELECT maSanPham,tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe đạp điện%
+    [1] => %xe đạp điện%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+    [6] => %điện%
+    [7] => %điện%
+)
+
+ROWS: 0
+
+SQL: SELECT maSanPham,tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %có ô tô không%
+    [1] => %có ô tô không%
+    [2] => %tô%
+    [3] => %tô%
+)
+
+ROWS: 0
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %có xe điện k%
+    [1] => %có xe điện k%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %điện%
+    [5] => %điện%
+)
+
+ROWS: 0
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %điện thoại%
+    [1] => %điện thoại%
+    [2] => %điện%
+    [3] => %điện%
+    [4] => %thoại%
+    [5] => %thoại%
+)
+
+ROWS: 0
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe máy%
+    [1] => %xe máy%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %máy%
+    [5] => %máy%
+)
+
+ROWS: 1
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %gửi t chi tiết%
+    [1] => %gửi t chi tiết%
+    [2] => %gửi%
+    [3] => %gửi%
+    [4] => %chi%
+    [5] => %chi%
+    [6] => %tiết%
+    [7] => %tiết%
+)
+
+ROWS: 0
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %có xe bmw k%
+    [1] => %có xe bmw k%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %bmw%
+    [5] => %bmw%
+)
+
+ROWS: 0
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %bmw%
+    [1] => %bmw%
+    [2] => %bmw%
+    [3] => %bmw%
+)
+
+ROWS: 3
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?) AND (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %có xe đạp không%
+    [1] => %có xe đạp không%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+)
+
+ROWS: 0
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %đồng hồ%
+    [1] => %đồng hồ%
+    [2] => %đồng%
+    [3] => %đồng%
+    [4] => %hồ%
+    [5] => %hồ%
+)
+
+ROWS: 20
+
+SQL: SELECT tenSanPham, gia, moTa
+        FROM sanpham
+        WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %muốn%
+    [1] => %muốn%
+)
+
+ROWS: 0
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %máy sấy%
+    [1] => %máy sấy%
+    [2] => %máy%
+    [3] => %máy%
+    [4] => %sấy%
+    [5] => %sấy%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe điện%
+    [1] => %xe điện%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %điện%
+    [5] => %điện%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe đạp%
+    [1] => %xe đạp%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe đạp địa hình%
+    [1] => %xe đạp địa hình%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+    [6] => %địa%
+    [7] => %địa%
+    [8] => %hình%
+    [9] => %hình%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe đạp địa hình%
+    [1] => %xe đạp địa hình%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+    [6] => %địa%
+    [7] => %địa%
+    [8] => %hình%
+    [9] => %hình%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe đạp địa hình%
+    [1] => %xe đạp địa hình%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+    [6] => %địa%
+    [7] => %địa%
+    [8] => %hình%
+    [9] => %hình%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %oto%
+    [1] => %oto%
+    [2] => %oto%
+    [3] => %oto%
+)
+
+ROWS: 2
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %bmw%
+    [1] => %bmw%
+    [2] => %bmw%
+    [3] => %bmw%
+)
+
+ROWS: 3
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xin link%
+    [1] => %xin link%
+    [2] => %link%
+    [3] => %link%
+)
+
+ROWS: 0
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %ok%
+    [1] => %ok%
+    [2] => %ok%
+    [3] => %ok%
+)
+
+ROWS: 3
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %bạn  tủ lạnh%
+    [1] => %bạn  tủ lạnh%
+    [2] => %tủ%
+    [3] => %tủ%
+    [4] => %lạnh%
+    [5] => %lạnh%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %máy sấy%
+    [1] => %máy sấy%
+    [2] => %máy%
+    [3] => %máy%
+    [4] => %sấy%
+    [5] => %sấy%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe%
+    [1] => %xe%
+    [2] => %xe%
+    [3] => %xe%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe%
+    [1] => %xe%
+    [2] => %xe%
+    [3] => %xe%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe đạp%
+    [1] => %xe đạp%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đạp%
+    [5] => %đạp%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe máy%
+    [1] => %xe máy%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %máy%
+    [5] => %máy%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %máy tính%
+    [1] => %máy tính%
+    [2] => %máy%
+    [3] => %máy%
+    [4] => %tính%
+    [5] => %tính%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %ipad pro 11%
+    [1] => %ipad pro 11%
+    [2] => %ipad%
+    [3] => %ipad%
+    [4] => %pro%
+    [5] => %pro%
+    [6] => %11%
+    [7] => %11%
+)
+
+ROWS: 12
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %ipad pro 11%
+    [1] => %ipad pro 11%
+    [2] => %ipad%
+    [3] => %ipad%
+    [4] => %pro%
+    [5] => %pro%
+    [6] => %11%
+    [7] => %11%
+)
+
+ROWS: 12
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %đồng hồ%
+    [1] => %đồng hồ%
+    [2] => %đồng%
+    [3] => %đồng%
+    [4] => %hồ%
+    [5] => %hồ%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %*watch ultra 2024%
+    [1] => %*watch ultra 2024%
+    [2] => %*watch%
+    [3] => %*watch%
+    [4] => %ultra%
+    [5] => %ultra%
+    [6] => %2024%
+    [7] => %2024%
+)
+
+ROWS: 4
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %tủ lạnh%
+    [1] => %tủ lạnh%
+    [2] => %tủ%
+    [3] => %tủ%
+    [4] => %lạnh%
+    [5] => %lạnh%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe đap%
+    [1] => %xe đap%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %đap%
+    [5] => %đap%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe máy%
+    [1] => %xe máy%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %máy%
+    [5] => %máy%
+)
+
+ROWS: 20
+
+SQL: SELECT maSanPham, tenSanPham, gia, moTa
+
+FROM sanpham
+
+WHERE trangThai = 1 AND ((tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?) OR (tenSanPham LIKE ? OR moTa LIKE ?)) LIMIT 20
+PARAMS: Array
+(
+    [0] => %xe ôtô  bạn%
+    [1] => %xe ôtô  bạn%
+    [2] => %xe%
+    [3] => %xe%
+    [4] => %ôtô%
+    [5] => %ôtô%
+)
+
+ROWS: 20
+

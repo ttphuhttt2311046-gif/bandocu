@@ -1,0 +1,113 @@
+.danhmuc-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.form-add-danhmuc {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #007bff;
+}
+
+.form-add-danhmuc input,
+.form-add-danhmuc textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-add-danhmuc button {
+    background: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.form-add-danhmuc button:hover {
+    background: #218838;
+}
+
+#danhsach-danhmuc {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    list-style: none;
+    padding-left: 0;
+}
+
+.danhmuc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    background: white;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    cursor: move;
+    transition: all 0.3s;
+}
+
+.danhmuc-item:hover {
+    background: #f0f7ff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.danhmuc-item.dragging {
+    opacity: 0.5;
+    background: #e9ecef;
+}
+
+.danhmuc-info {
+    flex: 1;
+}
+
+.danhmuc-info strong {
+    display: block;
+    font-size: 16px;
+    color: #333;
+}
+
+.danhmuc-info small {
+    color: #999;
+    font-size: 13px;
+}
+
+.danhmuc-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-xoa {
+    background: #dc3545;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.btn-xoa:hover {
+    background: #c82333;
+}
+
+.drag-handle {
+    cursor: grab;
+    color: #999;
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}

@@ -1,0 +1,9 @@
+ID=40 NAME=Iphone 13 ProMax 128gb vàng.
+
+ID=10 NAME=Macbook pro 16
+ID=10 NAME=Macbook pro 16
+ID=10 NAME=Macbook pro 16
+ID=41 NAME=MOTO GPX 150cc - FULL KIỂNG.
+ID=61 NAME=BMW X5 2015
+ID=4 NAME=Dàn karaoke MK Acoustic
+ID=5 NAME=Dell Latitude 7400

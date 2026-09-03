@@ -1,0 +1,472 @@
+/* ===================== RESET ===================== */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:"Segoe UI", Arial, sans-serif;
+  background:#f5f6fa;
+  color:#222;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+/* ===================== HEADER ===================== */
+.topbar{
+  background:#2f903f;
+  color:#fff;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.topbar-inner{
+  max-width:1200px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  height:64px;
+}
+
+.topbar nav{
+  display:flex;
+  gap:18px;
+}
+
+.topbar nav a{
+  padding:6px 10px;
+  border-radius:6px;
+  transition:0.2s;
+}
+
+.topbar nav a:hover{
+  background:rgba(255,255,255,0.2);
+}
+
+/* ===================== CONTAINER ===================== */
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+
+/* ===================== PRODUCT ===================== */
+.product-box{
+  display:grid;
+  grid-template-columns:420px 1fr;
+  gap:30px;
+  background:#fff;
+  border-radius:16px;
+  padding:25px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* ===== gallery ===== */
+.main-media{
+  width:100%;
+  height:360px;
+  object-fit:contain;
+  border-radius:12px;
+  background:#000;
+}
+
+.thumbs1{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+
+.thumbs1 img{
+  width:60px;
+  height:60px;
+  border-radius:8px;
+  object-fit:cover;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:0.2s;
+}
+
+.thumbs1 img:hover{
+  border-color:#667eea;
+}
+
+/* ===== action ===== */
+.left-action{
+  margin-top:15px;
+}
+
+.left-action h3{
+  font-size:20px;
+  margin-bottom:10px;
+}
+
+.left-action input{
+  width:70px;
+  padding:6px;
+  border-radius:6px;
+  border:1px solid #ddd;
+}
+
+.left-action button{
+  margin-left:10px;
+  padding:10px 16px;
+  background:linear-gradient(135deg,#ff416c,#ff4b2b);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.left-action button:hover{
+  transform:translateY(-2px);
+}
+
+/* ===== info ===== */
+.price{
+  font-size:30px;
+  font-weight:bold;
+  color:#ff416c;
+}
+
+.rating-box{
+  margin:10px 0;
+}
+
+.desc{
+  margin-top:15px;
+  line-height:1.6;
+  color:#444;
+}
+
+/* ===================== SUGGEST ===================== */
+h2{
+  margin-top:35px;
+  margin-bottom:12px;
+  font-size:22px;
+}
+
+/* wrapper */
+.suggest-wrapper{
+  position:relative;
+  overflow:visible; /* 🔥 FIX NÚT */
+}
+
+/* container */
+.suggest-container{
+  overflow:hidden;
+}
+
+/* list */
+.product-list{
+  display:flex;
+  transition:0.4s;
+}
+
+/* card */
+.product-list .item{
+  flex: 0 0 20%;
+  max-width:20%;
+  padding:10px;
+}
+
+.product-list .item a{
+  display:block;
+  background:#fff;
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:0 5px 15px rgba(0,0,0,0.08);
+  transition:0.25s;
+}
+
+.product-list .item a:hover{
+  transform:translateY(-6px);
+  box-shadow:0 12px 25px rgba(0,0,0,0.15);
+}
+
+/* image */
+.product-list img{
+  width:100%;
+  height:150px;
+  object-fit:cover;
+}
+
+/* text */
+.product-list p{
+  padding:8px 10px 0;
+  font-size:14px;
+  font-weight:600;
+  height:42px;
+  overflow:hidden;
+}
+
+.product-list span{
+  display:block;
+  padding:5px 10px 0;
+  color:#ff416c;
+  font-weight:bold;
+}
+
+.product-list .rating{
+  padding:5px 10px 10px;
+  color:#f5a623;
+}
+
+/* ===== nút ===== */
+.nav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:none;
+  background:#fff;
+  cursor:pointer;
+  z-index:10;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+.nav:hover{
+  background:#ff416c;
+  color:#fff;
+}
+
+.prev{ left:-25px; }
+.next{ right:-25px; }
+
+/* ===== REVIEW BOX ===== */
+.review-box{
+  margin-top:40px;
+  background:#fff;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.06);
+}
+
+/* ===== TITLE ===== */
+.review-box h2{
+  margin-bottom:15px;
+  font-size:20px;
+}
+
+/* ===== RATING BAR ===== */
+.rating-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:6px 0;
+  font-size:14px;
+}
+
+.rating-bar{
+  flex:1;
+  height:8px;
+  background:#eee;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.rating-fill{
+  height:100%;
+  background:#ffb400;
+}
+
+/* ===== FORM ===== */
+.review-box textarea{
+  width:100%;
+  height:90px;
+  margin-top:10px;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+.review-box button{
+  margin-top:10px;
+  padding:8px 14px;
+  border:none;
+  border-radius:6px;
+  background:#ff416c;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* ===== STAR SELECT (TRÁI → PHẢI) ===== */
+.star-select{
+  display:flex;
+  flex-direction: row-reverse; /* 🔥 CỰC QUAN TRỌNG */
+  gap:6px;
+}
+
+.star-select input{
+  display:none;
+  
+}
+
+.star-select label{
+  font-size:28px;
+  color:#ccc;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+/* hover */
+.star-select label:hover,
+.star-select label:hover ~ label{
+  color:#ffb400;
+}
+
+/* chọn */
+.star-select input:checked ~ label{
+  color:#ffb400;
+}
+/* ===== REVIEW LIST ===== */
+.review-item{
+  padding:12px 0;
+  border-bottom:1px solid #eee;
+}
+
+.review-item:last-child{
+  border-bottom:none;
+}
+
+/* tên + sao */
+.review-item strong{
+  font-size:15px;
+}
+
+.review-item strong + *{
+  margin-left:8px;
+  color:#ffb400;
+}
+
+/* nội dung */
+.review-item p{
+  margin:6px 0;
+  font-size:14px;
+  color:#444;
+}
+
+/* thời gian */
+.review-item small{
+  font-size:12px;
+  color:#888;
+}
+
+/* ===== SELLER REPLY ===== */
+.seller-reply{
+  margin-top:8px;
+  padding:10px;
+  background:#f5f6fa;
+  border-left:3px solid #667eea;
+  border-radius:6px;
+}
+
+.seller-reply strong{
+  font-size:14px;
+  color:#667eea;
+}
+
+/* ===== ACTION ===== */
+.review-actions{
+  margin-top:6px;
+}
+
+.review-actions a{
+  font-size:13px;
+  color:#e53935;
+}
+
+/* ===== FORM EDIT ===== */
+.review-item form{
+  margin-top:8px;
+}
+
+.review-item select{
+  margin-bottom:5px;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media(max-width:768px){
+  .product-box{
+    grid-template-columns:1fr;
+  }
+
+  .product-list .item{
+    flex:0 0 60%;
+    max-width:60%;
+  }
+
+  .prev{ left:5px; }
+  .next{ right:5px; }
+}
+/* Seller card */
+.seller-box{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:14px 0;
+  padding:6px;
+  border-radius:5px;
+  border:2px solid rgba(192, 195, 193, 0.242); /* viền*/
+  box-shadow: 0 4px 18px rgba(15,45,15,0.03);
+}
+
+/* Avatar */
+.seller-avatar{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid rgba(255,255,255,0.6);
+  background:#fff;
+  flex-shrink:0;
+}
+
+/* Info (tên + phone) */
+.seller-info{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin-left:6px;
+}
+.seller-name{
+  font-weight:700;
+  color:#000501; /* tên màu xanh đậm */
+  text-decoration:none;
+  font-size:15px;
+}
+.seller-phone{
+  font-size:13px;
+  color:#000000;
+}
+
+.btn-view-shop{
+  margin-left:auto;
+  background:transparent;
+  color:#2f903f;         /* chữ xanh */
+  border:1.5px solid #2f903f; /* viền xanh */
+  padding:8px 14px;
+  border-radius:10px;
+  text-decoration:none;
+  font-weight:700;
+  transition: background .12s ease, color .12s ease, transform .08s;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* hover/active */
+.btn-view-shop:hover{
+  background:rgba(47,144,63,0.06);
+  transform:translateY(-2px);
+}
+.btn-view-shop:active{ transform:translateY(0); }
