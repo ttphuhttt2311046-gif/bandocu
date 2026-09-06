@@ -19,6 +19,121 @@ if (isset($_GET['delete'])) {
     exit("OK");
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+    $requestId = (int)($_POST['request_id'] ?? 0);
+
+    if ($requestId <= 0) {
+        exit('Yêu cầu không hợp lệ');
+    }
+
+    if ($action === 'approve_delete') {
+        $stmt = $conn->prepare("
+            SELECT maTaiKhoan
+            FROM yeucauxoatk
+            WHERE id = ?
+              AND trangThai = 'cho_xu_ly'
+            LIMIT 1
+        ");
+        $stmt->bind_param("i", $requestId);
+        $stmt->execute();
+        $request = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$request) {
+            exit('Yêu cầu không tồn tại hoặc đã xử lý');
+        }
+
+        $conn->begin_transaction();
+
+        try {
+            $delete = $conn->prepare("
+                DELETE FROM taikhoan
+                WHERE maTaiKhoan = ?
+            ");
+            $delete->bind_param("i", $request['maTaiKhoan']);
+            $delete->execute();
+            $delete->close();
+
+            $conn->commit();
+            exit('OK');
+        } catch (Throwable $e) {
+            $conn->rollback();
+            exit('Không thể xóa tài khoản');
+        }
+    }
+
+    if ($action === 'reject_delete') {
+        $reason = trim((string)($_POST['reason'] ?? ''));
+
+        if ($reason === '') {
+            $reason = 'Yêu cầu chưa đủ điều kiện để xóa tài khoản.';
+        }
+
+        if (mb_strlen($reason, 'UTF-8') > 1000) {
+            exit('Lý do từ chối quá dài');
+        }
+
+        $stmt = $conn->prepare("
+            SELECT maTaiKhoan
+            FROM yeucauxoatk
+            WHERE id = ?
+              AND trangThai = 'cho_xu_ly'
+            LIMIT 1
+        ");
+        $stmt->bind_param("i", $requestId);
+        $stmt->execute();
+        $request = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$request) {
+            exit('Yêu cầu không tồn tại hoặc đã xử lý');
+        }
+
+        $conn->begin_transaction();
+
+        try {
+            $status = 'tu_choi';
+
+            $update = $conn->prepare("
+                UPDATE yeucauxoatk
+                SET trangThai = ?,
+                    lyDoTuChoi = ?,
+                    ngayXuLy = NOW()
+                WHERE id = ?
+            ");
+            $update->bind_param("ssi", $status, $reason, $requestId);
+            $update->execute();
+            $update->close();
+
+            $message = "Yêu cầu xóa tài khoản của bạn đã bị từ chối. Lý do: "
+                . $reason;
+
+            $notify = $conn->prepare("
+                INSERT INTO nhantin
+                    (noiDung, maNguoiGui, maNguoiNhan, trangThai, ngayGui)
+                VALUES (?, ?, ?, 'chua_xem', NOW())
+            ");
+
+            $adminId = (int)$_SESSION['user_id'];
+            $notify->bind_param(
+                "sii",
+                $message,
+                $adminId,
+                $request['maTaiKhoan']
+            );
+            $notify->execute();
+            $notify->close();
+
+            $conn->commit();
+            exit('OK');
+        } catch (Throwable $e) {
+            $conn->rollback();
+            exit('Không thể từ chối yêu cầu');
+        }
+    }
+}
+
 // ==================
 //  FORM EDIT
 // ==================

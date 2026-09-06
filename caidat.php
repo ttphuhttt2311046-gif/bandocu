@@ -61,7 +61,7 @@ $uid = $_SESSION['user_id'];
     </a>
 
     <div class="section-title">Hỗ trợ</div>
-    <a class="setting-item" href="#" data-key="hotro">
+    <a class="setting-item" href="caidat/trungtamhotro.php" data-key="hotro">
       <div>
         <span class="label">Trung tâm hỗ trợ</span>
       </div>
@@ -73,20 +73,20 @@ $uid = $_SESSION['user_id'];
       </div>
       <span class="chev">›</span>
     </a>
-    <a class="setting-item" href="#" data-key="dieukhoan">
+    <a class="setting-item" href="caidat/dieukhoan.php" data-key="dieukhoan">
       <div>
         <span class="label">Điều khoản</span>
       </div>
       <span class="chev">›</span>
     </a>
-    <a class="setting-item" href="#" data-key="dieukhoan">
+    <a class="setting-item" href="caidat/gioithieu.php" data-key="dieukhoan">
       <div>
         <span class="label">Giới thiệu</span>
       </div>
       <span class="chev">›</span>
     </a>
 
-    <a class="setting-item" href="#" data-key="xoa_tk">
+    <a class="setting-item" href="caidat/ycxoataikhoan.php" data-key="xoa_tk">
       <div>
         <span class="label">Yêu cầu xóa tài khoản</span>
       </div>

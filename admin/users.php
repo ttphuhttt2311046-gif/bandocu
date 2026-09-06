@@ -27,9 +27,37 @@ if (isset($_GET['unlock'])) {
 
 // Lấy danh sách user
 $users = $conn->query("SELECT * FROM taikhoan ORDER BY maTaiKhoan DESC");
+
+$requests = $conn->query("
+    SELECT
+        yc.id,
+        yc.maTaiKhoan,
+        yc.lyDo,
+        yc.lyDoKhac,
+        yc.trangThai,
+        tk.tenNguoiDung,
+        tk.tenDangNhap
+    FROM yeucauxoatk yc
+    INNER JOIN taikhoan tk
+        ON tk.maTaiKhoan = yc.maTaiKhoan
+    ORDER BY yc.id DESC
+");
 ?>
 <div class="container-fluid">
     <h1 class="h3 mb-4 text-gray-800">Quản lý người dùng</h1>
+    <ul class="nav nav-tabs mb-4" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active" data-tab="usersTab">
+            Quản lý người dùng
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link" data-tab="requestsTab">
+            Yêu cầu
+        </button>
+    </li>
+</ul>
+<div id="usersTab" class="admin-tab-content">
     <!-- MOBILE COLUMN HEADER -->
 <div class="mobile-column-header">
   <span>ID</span>
@@ -81,7 +109,6 @@ $users = $conn->query("SELECT * FROM taikhoan ORDER BY maTaiKhoan DESC");
   </div>
 </td>
 </tr>
-
 <!-- HÀNG CHI TIẾT (ẨN) -->
 <tr class="user-detail">
     <td colspan="8">
@@ -113,9 +140,73 @@ $users = $conn->query("SELECT * FROM taikhoan ORDER BY maTaiKhoan DESC");
     </td>
 </tr>
 <?php endwhile; ?>
-        </tbody>
+    </tbody>
        </table>
-       </div> 
+       </div>
+</div>
+<div id="requestsTab" class="admin-tab-content" style="display:none">
+    <h2 class="h4 mb-3">Yêu cầu xóa tài khoản</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Tên người dùng</th>
+                    <th>Lý do</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+            <?php while ($request = $requests->fetch_assoc()): ?>
+                <tr>
+                    <td><?= (int)$request['maTaiKhoan'] ?></td>
+                    <td>
+                        <?= htmlspecialchars(
+                            $request['tenNguoiDung'] ?: $request['tenDangNhap'],
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+                    </td>
+                    <td>
+                        <?= htmlspecialchars($request['lyDo'], ENT_QUOTES, 'UTF-8') ?>
+
+                        <?php if (!empty($request['lyDoKhac'])): ?>
+                            <br>
+                            <small>
+                                Chi tiết:
+                                <?= htmlspecialchars(
+                                    $request['lyDoKhac'],
+                                    ENT_QUOTES,
+                                    'UTF-8'
+                                ) ?>
+                            </small>
+                        <?php endif; ?>
+                    </td>
+                    <td><?= htmlspecialchars($request['trangThai'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td>
+                        <?php if ($request['trangThai'] === 'cho_xu_ly'): ?>
+                            <button
+                                class="btn btn-success btn-sm"
+                                onclick="approveDelete(<?= (int)$request['id'] ?>)">
+                                Đồng ý
+                            </button>
+
+                            <button
+                                class="btn btn-danger btn-sm"
+                                onclick="rejectDelete(<?= (int)$request['id'] ?>)">
+                                Từ chối
+                            </button>
+                        <?php else: ?>
+                            Đã xử lý
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 <script>
 let isActionProcessing = false;
@@ -164,4 +255,72 @@ $(document).on("click", ".mobile-user-table .user-row", function(e){
   $(".mobile-user-table .user-detail").not($detail).slideUp(150);
   $detail.stop(true,true).slideToggle(150);
 });
+$(document).on("click", "[data-tab]", function () {
+    const tab = $(this).data("tab");
+
+    $(".admin-tab-content").hide();
+    $("#" + tab).show();
+
+    $("[data-tab]").removeClass("active");
+    $(this).addClass("active");
+});
+
+function approveDelete(requestId) {
+    if (!confirm("Bạn có chắc chắn muốn đồng ý xóa tài khoản này không?")) {
+        return;
+    }
+
+    $.post(
+        "users_manager.php",
+        {
+            action: "approve_delete",
+            request_id: requestId
+        },
+        function (response) {
+            if (response === "OK") {
+                alert("Đã đồng ý và xóa tài khoản.");
+                loadPage("users.php");
+            } else {
+                alert(response);
+            }
+        }
+    );
+}
+
+function rejectDelete(requestId) {
+    if (!confirm("Bạn có chắc chắn muốn từ chối yêu cầu này không?")) {
+        return;
+    }
+
+    const defaultReason =
+        "Yêu cầu chưa đủ điều kiện để xóa tài khoản.";
+
+    const reason = prompt(
+        "Nhập lý do từ chối. Bấm Hủy để dùng lý do mặc định:",
+        defaultReason
+    );
+
+    if (reason === null) {
+        return;
+    }
+
+    const finalReason = reason.trim() || defaultReason;
+
+    $.post(
+        "users_manager.php",
+        {
+            action: "reject_delete",
+            request_id: requestId,
+            reason: finalReason
+        },
+        function (response) {
+            if (response === "OK") {
+                alert("Đã từ chối yêu cầu.");
+                loadPage("users.php");
+            } else {
+                alert(response);
+            }
+        }
+    );
+}
 </script>
