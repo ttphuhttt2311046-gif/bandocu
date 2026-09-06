@@ -73,11 +73,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("ssssss",$tenNguoiDung, $email, $hashed, $soDienThoai, $diaChi, $vaitro);
 
             if ($stmt->execute()) {
-                echo "<script>alert('Đăng ký thành công! Hãy đăng nhập.'); window.location='login.php';</script>";
-                exit;
-            } else {
-                $error = "Lỗi khi đăng ký: " . $conn->error;
-            }
+    $maTaiKhoan = $stmt->insert_id;
+
+    $addressStmt = $conn->prepare("
+        INSERT INTO diachi
+        (maTaiKhoan, tenNguoiNhan, soDienThoai, diaChi, loaiDiaChi, macDinh)
+        VALUES (?, ?, ?, ?, 'Nha Rieng', 1)
+    ");
+
+    $addressStmt->bind_param(
+        "isss",
+        $maTaiKhoan,
+        $tenNguoiDung,
+        $soDienThoai,
+        $diaChi
+    );
+
+    $addressStmt->execute();
+    $addressStmt->close();
+
+    echo "<script>
+        alert('Đăng ký thành công! Hãy đăng nhập.');
+        window.location='login.php';
+    </script>";
+    exit;
+}
         }
     }
 }

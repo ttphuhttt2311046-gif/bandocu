@@ -47,14 +47,24 @@ if (empty($cartUse)) {
 
 /*  LẤY THÔNG TIN NGƯỜI DÙNG*/
 $stmtUser = $conn->prepare("
-    SELECT tenNguoiDung, soDienThoai, diaChi
-    FROM taikhoan
-    WHERE maTaiKhoan = ?
+    SELECT tenNguoiNhan, soDienThoai, diaChi
+FROM diachi
+WHERE maTaiKhoan = ?
+  AND macDinh = 1
+LIMIT 1
 ");
 $stmtUser->bind_param("i", $maNguoiDung);
 $stmtUser->execute();
 $user = $stmtUser->get_result()->fetch_assoc();
 $stmtUser->close();
+
+if (!$user) {
+    echo "<script>
+        alert('Vui lòng thêm và chọn một địa chỉ mặc định trước khi thanh toán.');
+        window.location='caidat/diachi.php?action=add';
+    </script>";
+    exit;
+}
 
 /* TÍNH TỔNG TIỀN */
 $tongTien = 0;
@@ -75,10 +85,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         // TẠO ĐƠN HÀNG
         $stmtDH = $conn->prepare("
-            INSERT INTO donhang (ngayDat, tongTien, trangThai, maNguoiMua)
-            VALUES (NOW(), ?, 'Chờ thanh toán', ?)
-        ");
-        $stmtDH->bind_param("di", $tongTien, $maNguoiDung);
+    INSERT INTO donhang
+    (ngayDat, tongTien, trangThai, maNguoiMua,
+     tenNguoiNhan, soDienThoaiNhan, diaChiGiaoHang)
+    VALUES (NOW(), ?, 'Chờ thanh toán', ?, ?, ?, ?)
+");
+
+$stmtDH->bind_param(
+    "disss",
+    $tongTien,
+    $maNguoiDung,
+    $user['tenNguoiNhan'],
+    $user['soDienThoai'],
+    $user['diaChi']
+);
         $stmtDH->execute();
         $maDonHang = $stmtDH->insert_id;
         $stmtDH->close();
@@ -206,9 +226,9 @@ unset($_SESSION['cart_temp']);
     <h2>🧾 Thông tin đơn hàng</h2>
 
     <div class="info">
-        <p><b>Họ tên:</b> <?= htmlspecialchars($user['tenNguoiDung']) ?></p>
-        <p><b>SĐT:</b> <?= htmlspecialchars($user['soDienThoai']) ?></p>
-        <p><b>Địa chỉ:</b> <?= htmlspecialchars($user['diaChi']) ?></p>
+        <p><b>Họ tên:</b> <?= htmlspecialchars($user['tenNguoiNhan'], ENT_QUOTES, 'UTF-8') ?></p>
+        <p><b>SĐT:</b> <?= htmlspecialchars($user['soDienThoai'], ENT_QUOTES, 'UTF-8') ?></p>
+        <p><b>Địa chỉ:</b> <?= htmlspecialchars($user['diaChi'], ENT_QUOTES, 'UTF-8') ?></p>
     </div>
 
     <hr>

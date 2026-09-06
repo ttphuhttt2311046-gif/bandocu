@@ -16,11 +16,13 @@ SELECT DISTINCT
     dh.ngayDat,
     dh.tongTien,
     dh.trangThai,
-    tk.tenNguoiDung AS tenNguoiMua,
-    tk.diaChi AS diaChiNguoiMua
+    COALESCE(dh.tenNguoiNhan, tk.tenNguoiDung) AS tenNguoiMua,
+    COALESCE(dh.diaChiGiaoHang, tk.diaChi) AS diaChiNguoiMua
 FROM donhang dh
-JOIN chitietdonhang ct ON dh.maDonHang = ct.maDonHang
-JOIN taikhoan tk ON dh.maNguoiMua = tk.maTaiKhoan
+JOIN chitietdonhang ct
+    ON dh.maDonHang = ct.maDonHang
+JOIN taikhoan tk
+    ON dh.maNguoiMua = tk.maTaiKhoan
 WHERE ct.maNguoiBan = ?
 ORDER BY dh.maDonHang DESC
 ";
