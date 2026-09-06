@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1:3306
--- Thời gian đã tạo: Th8 17, 2026 lúc 03:57 PM
--- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.0.30
+-- Host: 127.0.0.1:3306
+-- Generation Time: Sep 04, 2026 at 02:30 PM
+-- Server version: 9.1.0
+-- PHP Version: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,25 +18,27 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `bandocu18_7`
+-- Database: `bandocu`
 --
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `banner`
+-- Table structure for table `banner`
 --
 
-CREATE TABLE `banner` (
-  `id` int(11) NOT NULL,
-  `hinh` varchar(255) DEFAULT NULL,
-  `link` varchar(255) DEFAULT NULL,
-  `trangthai` tinyint(4) DEFAULT 1,
-  `thu_tu` int(11) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `banner`;
+CREATE TABLE IF NOT EXISTS `banner` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `hinh` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `trangthai` tinyint DEFAULT '1',
+  `thu_tu` int DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `banner`
+-- Dumping data for table `banner`
 --
 
 INSERT INTO `banner` (`id`, `hinh`, `link`, `trangthai`, `thu_tu`) VALUES
@@ -50,22 +52,67 @@ INSERT INTO `banner` (`id`, `hinh`, `link`, `trangthai`, `thu_tu`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `chitietdonhang`
+-- Table structure for table `baocao_shop`
 --
 
-CREATE TABLE `chitietdonhang` (
-  `maChiTiet` int(11) NOT NULL,
-  `maDonHang` int(11) NOT NULL,
-  `maDonHang_Shop` int(11) DEFAULT NULL,
-  `maSanPham` int(11) NOT NULL,
-  `maNguoiBan` int(11) DEFAULT NULL,
-  `soLuong` int(11) DEFAULT 1,
-  `donGia` decimal(15,2) DEFAULT 0.00,
-  `thanhTien` decimal(15,2) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `baocao_shop`;
+CREATE TABLE IF NOT EXISTS `baocao_shop` (
+  `maBaoCao` int UNSIGNED NOT NULL AUTO_INCREMENT,
+  `loaiBaoCao` enum('shop','sanpham') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'shop',
+  `maShop` int NOT NULL,
+  `maSanPham` int DEFAULT NULL,
+  `maNguoiBaoCao` int NOT NULL,
+  `tenShop` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tenNguoiBaoCao` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lyDo` enum('hang_gia','lua_dao','hang_cam','gia_mao','gian_lan_spam','khac') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lyDoKhac` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `moTa` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `bangChung` longtext COLLATE utf8mb4_unicode_ci,
+  `trangThai` enum('cho_xu_ly','dang_xu_ly','da_xac_minh','tu_choi','da_dong') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'cho_xu_ly',
+  `ghiChuAdmin` text COLLATE utf8mb4_unicode_ci,
+  `ngayBaoCao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ngayXuLy` datetime DEFAULT NULL,
+  PRIMARY KEY (`maBaoCao`),
+  KEY `maShop` (`maShop`),
+  KEY `maNguoiBaoCao` (`maNguoiBaoCao`),
+  KEY `trangThai` (`trangThai`),
+  KEY `idx_baocao_sanpham` (`maSanPham`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `chitietdonhang`
+-- Dumping data for table `baocao_shop`
+--
+
+INSERT INTO `baocao_shop` (`maBaoCao`, `loaiBaoCao`, `maShop`, `maSanPham`, `maNguoiBaoCao`, `tenShop`, `tenNguoiBaoCao`, `lyDo`, `lyDoKhac`, `moTa`, `bangChung`, `trangThai`, `ghiChuAdmin`, `ngayBaoCao`, `ngayXuLy`) VALUES
+(1, 'shop', 2, NULL, 1, 'Nguyenđây', 'NguyenVan', 'hang_gia', '', 'Khứa này lừa đảo bán đồ giả không mua', '[{\"tenGoc\":\"uc.jpg\",\"tenLuu\":\"c3e8e317388d5401b3aa247fc9c471a0.jpg\",\"duongDan\":\"assets/uploads/bao_cao_shop/c3e8e317388d5401b3aa247fc9c471a0.jpg\",\"loai\":\"image\",\"mime\":\"image/jpeg\",\"kichThuoc\":167690}]', 'da_xac_minh', NULL, '2026-09-03 20:31:42', '2026-09-03 22:32:27'),
+(2, 'shop', 2, NULL, 1, 'Nguyenđây', 'NguyenVan', 'gian_lan_spam', '', 'Spam tùm lum từa lưa chán vãi ò', '[{\"tenGoc\":\"1759202121573.jpeg\",\"tenLuu\":\"c437b6c1f9c0e310803f5cf6d2c4ce80.jpg\",\"duongDan\":\"assets/uploads/bao_cao_shop/c437b6c1f9c0e310803f5cf6d2c4ce80.jpg\",\"loai\":\"image\",\"mime\":\"image/jpeg\",\"kichThuoc\":1174573},{\"tenGoc\":\"1759202122006.jpeg\",\"tenLuu\":\"2a994cc0fb7b0d27a5b5b7957f6c8df3.jpg\",\"duongDan\":\"assets/uploads/bao_cao_shop/2a994cc0fb7b0d27a5b5b7957f6c8df3.jpg\",\"loai\":\"image\",\"mime\":\"image/jpeg\",\"kichThuoc\":1130595},{\"tenGoc\":\"1759202119846.jpeg\",\"tenLuu\":\"a059a77aea2233fbaaef2b4c55447720.jpg\",\"duongDan\":\"assets/uploads/bao_cao_shop/a059a77aea2233fbaaef2b4c55447720.jpg\",\"loai\":\"image\",\"mime\":\"image/jpeg\",\"kichThuoc\":1360354},{\"tenGoc\":\"1759202122586.jpeg\",\"tenLuu\":\"241498df1859d56b3925c12ebc448b93.jpg\",\"duongDan\":\"assets/uploads/bao_cao_shop/241498df1859d56b3925c12ebc448b93.jpg\",\"loai\":\"image\",\"mime\":\"image/jpeg\",\"kichThuoc\":1330449}]', 'da_xac_minh', NULL, '2026-09-03 21:51:38', '2026-09-03 21:53:22'),
+(3, 'shop', 2, NULL, 1, 'Nguyenđây', 'NguyenVan', 'khac', 'Test lí do khác', 'vậy vậy đó hahahâhaaaâ', '[{\"tenGoc\":\"Untitled.png\",\"tenLuu\":\"01419d6ad473ea84abc611ccfdac6766.png\",\"duongDan\":\"assets/uploads/bao_cao_shop/01419d6ad473ea84abc611ccfdac6766.png\",\"loai\":\"image\",\"mime\":\"image/png\",\"kichThuoc\":2127889}]', 'da_xac_minh', NULL, '2026-09-03 22:34:00', '2026-09-03 22:34:08'),
+(4, 'sanpham', 14, 101, 9, 'Quang Thuận', 'Diep', 'hang_gia', '', 'xe không khởi động máy được', '[{\"tenGoc\":\"1759202122006.jpeg\",\"tenLuu\":\"1d213829298e32320a285bf9b3f12886.jpg\",\"duongDan\":\"assets/uploads/bao_cao_san_pham/1d213829298e32320a285bf9b3f12886.jpg\",\"loai\":\"image\",\"mime\":\"image/jpeg\",\"kichThuoc\":1130595},{\"tenGoc\":\"1759202119846.jpeg\",\"tenLuu\":\"60db8e3a6071b47d8814bb5c69cb2e0a.jpg\",\"duongDan\":\"assets/uploads/bao_cao_san_pham/60db8e3a6071b47d8814bb5c69cb2e0a.jpg\",\"loai\":\"image\",\"mime\":\"image/jpeg\",\"kichThuoc\":1360354}]', 'dang_xu_ly', NULL, '2026-09-04 21:25:50', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chitietdonhang`
+--
+
+DROP TABLE IF EXISTS `chitietdonhang`;
+CREATE TABLE IF NOT EXISTS `chitietdonhang` (
+  `maChiTiet` int NOT NULL AUTO_INCREMENT,
+  `maDonHang` int NOT NULL,
+  `maDonHang_Shop` int DEFAULT NULL,
+  `maSanPham` int NOT NULL,
+  `maNguoiBan` int DEFAULT NULL,
+  `soLuong` int DEFAULT '1',
+  `donGia` decimal(15,2) DEFAULT '0.00',
+  `thanhTien` decimal(15,2) DEFAULT NULL,
+  PRIMARY KEY (`maChiTiet`),
+  KEY `fk_chitietdonhang_donhang` (`maDonHang`),
+  KEY `fk_chitietdonhang_sanpham` (`maSanPham`),
+  KEY `fk_chitietdonhang_nguoiBan` (`maNguoiBan`)
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `chitietdonhang`
 --
 
 INSERT INTO `chitietdonhang` (`maChiTiet`, `maDonHang`, `maDonHang_Shop`, `maSanPham`, `maNguoiBan`, `soLuong`, `donGia`, `thanhTien`) VALUES
@@ -91,40 +138,46 @@ INSERT INTO `chitietdonhang` (`maChiTiet`, `maDonHang`, `maDonHang_Shop`, `maSan
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `counter`
+-- Table structure for table `counter`
 --
 
-CREATE TABLE `counter` (
-  `id` int(11) NOT NULL,
-  `total` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `counter`;
+CREATE TABLE IF NOT EXISTS `counter` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `total` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `counter`
+-- Dumping data for table `counter`
 --
 
 INSERT INTO `counter` (`id`, `total`) VALUES
-(1, 296);
+(1, 322);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `danhgia`
+-- Table structure for table `danhgia`
 --
 
-CREATE TABLE `danhgia` (
-  `id` int(11) NOT NULL,
-  `maSanPham` int(11) NOT NULL,
-  `maNguoiDung` int(11) NOT NULL,
-  `soSao` tinyint(4) NOT NULL,
-  `binhLuan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ngayDanhGia` datetime DEFAULT current_timestamp(),
-  `traLoiNguoiBan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ngayTraLoi` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `danhgia`;
+CREATE TABLE IF NOT EXISTS `danhgia` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `maSanPham` int NOT NULL,
+  `maNguoiDung` int NOT NULL,
+  `soSao` tinyint NOT NULL,
+  `binhLuan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `ngayDanhGia` datetime DEFAULT CURRENT_TIMESTAMP,
+  `traLoiNguoiBan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `ngayTraLoi` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_sanpham_nguoidung` (`maSanPham`,`maNguoiDung`),
+  KEY `fk_danhgia_nguoidung` (`maNguoiDung`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `danhgia`
+-- Dumping data for table `danhgia`
 --
 
 INSERT INTO `danhgia` (`id`, `maSanPham`, `maNguoiDung`, `soSao`, `binhLuan`, `ngayDanhGia`, `traLoiNguoiBan`, `ngayTraLoi`) VALUES
@@ -137,19 +190,21 @@ INSERT INTO `danhgia` (`id`, `maSanPham`, `maNguoiDung`, `soSao`, `binhLuan`, `n
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `danhmuc`
+-- Table structure for table `danhmuc`
 --
 
-CREATE TABLE `danhmuc` (
-  `maDanhMuc` int(11) NOT NULL,
-  `tenDanhMuc` varchar(100) NOT NULL,
-  `moTa` text DEFAULT NULL,
-  `trangThai` tinyint(1) DEFAULT 0,
-  `thu_tu` int(11) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `danhmuc`;
+CREATE TABLE IF NOT EXISTS `danhmuc` (
+  `maDanhMuc` int NOT NULL AUTO_INCREMENT,
+  `tenDanhMuc` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `moTa` text COLLATE utf8mb4_unicode_ci,
+  `trangThai` tinyint(1) DEFAULT '0',
+  `thu_tu` int DEFAULT '0',
+  PRIMARY KEY (`maDanhMuc`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `danhmuc`
+-- Dumping data for table `danhmuc`
 --
 
 INSERT INTO `danhmuc` (`maDanhMuc`, `tenDanhMuc`, `moTa`, `trangThai`, `thu_tu`) VALUES
@@ -170,20 +225,23 @@ INSERT INTO `danhmuc` (`maDanhMuc`, `tenDanhMuc`, `moTa`, `trangThai`, `thu_tu`)
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `donhang`
+-- Table structure for table `donhang`
 --
 
-CREATE TABLE `donhang` (
-  `maDonHang` int(11) NOT NULL,
-  `ngayDat` datetime DEFAULT current_timestamp(),
-  `tongTien` decimal(15,2) DEFAULT 0.00,
-  `trangThai` tinyint(4) DEFAULT NULL,
-  `maNguoiMua` int(11) DEFAULT NULL,
-  `maGiaoDichVNPAY` varchar(50) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `donhang`;
+CREATE TABLE IF NOT EXISTS `donhang` (
+  `maDonHang` int NOT NULL AUTO_INCREMENT,
+  `ngayDat` datetime DEFAULT CURRENT_TIMESTAMP,
+  `tongTien` decimal(15,2) DEFAULT '0.00',
+  `trangThai` tinyint DEFAULT NULL,
+  `maNguoiMua` int DEFAULT NULL,
+  `maGiaoDichVNPAY` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`maDonHang`),
+  KEY `fk_donhang_nguoiMua` (`maNguoiMua`)
+) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `donhang`
+-- Dumping data for table `donhang`
 --
 
 INSERT INTO `donhang` (`maDonHang`, `ngayDat`, `tongTien`, `trangThai`, `maNguoiMua`, `maGiaoDichVNPAY`) VALUES
@@ -228,21 +286,26 @@ INSERT INTO `donhang` (`maDonHang`, `ngayDat`, `tongTien`, `trangThai`, `maNguoi
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `donhang_shop`
+-- Table structure for table `donhang_shop`
 --
 
-CREATE TABLE `donhang_shop` (
-  `maDonHang_Shop` int(11) NOT NULL,
-  `maDonHang` int(11) DEFAULT NULL,
-  `maNguoiMua` int(11) DEFAULT NULL,
-  `maNguoiBan` int(11) DEFAULT NULL,
+DROP TABLE IF EXISTS `donhang_shop`;
+CREATE TABLE IF NOT EXISTS `donhang_shop` (
+  `maDonHang_Shop` int NOT NULL AUTO_INCREMENT,
+  `maDonHang` int DEFAULT NULL,
+  `maNguoiMua` int DEFAULT NULL,
+  `maNguoiBan` int DEFAULT NULL,
   `tongTien` decimal(15,2) DEFAULT NULL,
-  `trangThai` int(11) DEFAULT 0,
-  `ngayTao` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `trangThai` int DEFAULT '0',
+  `ngayTao` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`maDonHang_Shop`),
+  KEY `maDonHang` (`maDonHang`),
+  KEY `maNguoiMua` (`maNguoiMua`),
+  KEY `maNguoiBan` (`maNguoiBan`)
+) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `donhang_shop`
+-- Dumping data for table `donhang_shop`
 --
 
 INSERT INTO `donhang_shop` (`maDonHang_Shop`, `maDonHang`, `maNguoiMua`, `maNguoiBan`, `tongTien`, `trangThai`, `ngayTao`) VALUES
@@ -272,40 +335,50 @@ INSERT INTO `donhang_shop` (`maDonHang_Shop`, `maDonHang`, `maNguoiMua`, `maNguo
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `duyet_settings`
+-- Table structure for table `duyet_settings`
 --
 
-CREATE TABLE `duyet_settings` (
-  `id` int(11) NOT NULL,
-  `auto_review` tinyint(1) DEFAULT 0,
-  `banned_words` text DEFAULT NULL,
-  `warning_message` varchar(255) DEFAULT 'Sản phẩm chứa từ bị cấm!',
-  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `duyet_settings`;
+CREATE TABLE IF NOT EXISTS `duyet_settings` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `auto_review` tinyint(1) DEFAULT '0',
+  `banned_words` text COLLATE utf8mb4_unicode_ci,
+  `warning_message` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'Sản phẩm chứa từ bị cấm!',
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `soLanBaoCaoShopTheoDoi` int NOT NULL DEFAULT '3',
+  `soLanBaoCaoSanPhamTheoDoi` int NOT NULL DEFAULT '3',
+  `report_watch_enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `thongBaoViPham` longtext COLLATE utf8mb4_unicode_ci,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `duyet_settings`
+-- Dumping data for table `duyet_settings`
 --
 
-INSERT INTO `duyet_settings` (`id`, `auto_review`, `banned_words`, `warning_message`, `updated_at`) VALUES
-(1, 1, 'đồi trụy,mới 100%,ma túy,bóng cười,lựu đạn thật,súng thật', 'Sản phẩm chứa từ bị cấm!', '2025-11-16 06:47:44');
+INSERT INTO `duyet_settings` (`id`, `auto_review`, `banned_words`, `warning_message`, `updated_at`, `soLanBaoCaoShopTheoDoi`, `soLanBaoCaoSanPhamTheoDoi`, `report_watch_enabled`, `thongBaoViPham`) VALUES
+(1, 1, 'đồi trụy,mới 100%,ma túy,bóng cười,lựu đạn thật,súng thật', 'Sản phẩm chứa từ bị cấm!', '2025-11-16 06:47:44', 3, 3, 1, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `giohang`
+-- Table structure for table `giohang`
 --
 
-CREATE TABLE `giohang` (
-  `id` int(11) NOT NULL,
-  `maNguoiDung` int(11) NOT NULL,
-  `maSanPham` int(11) NOT NULL,
-  `soLuong` int(11) DEFAULT 1,
-  `ngayThem` datetime DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+DROP TABLE IF EXISTS `giohang`;
+CREATE TABLE IF NOT EXISTS `giohang` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `maNguoiDung` int NOT NULL,
+  `maSanPham` int NOT NULL,
+  `soLuong` int DEFAULT '1',
+  `ngayThem` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_cart` (`maNguoiDung`,`maSanPham`),
+  KEY `maSanPham` (`maSanPham`)
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `giohang`
+-- Dumping data for table `giohang`
 --
 
 INSERT INTO `giohang` (`id`, `maNguoiDung`, `maSanPham`, `soLuong`, `ngayThem`) VALUES
@@ -316,22 +389,26 @@ INSERT INTO `giohang` (`id`, `maNguoiDung`, `maSanPham`, `soLuong`, `ngayThem`) 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `nhantin`
+-- Table structure for table `nhantin`
 --
 
-CREATE TABLE `nhantin` (
-  `maThongBao` int(11) NOT NULL,
-  `noiDung` text DEFAULT NULL,
-  `maNguoiGui` int(11) DEFAULT NULL,
-  `maNguoiNhan` int(11) DEFAULT NULL,
-  `ngayGui` datetime DEFAULT current_timestamp(),
-  `phanHoi` text DEFAULT NULL,
-  `trangThai` enum('chua_xem','da_xem') DEFAULT 'chua_xem',
-  `thoiGian` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `nhantin`;
+CREATE TABLE IF NOT EXISTS `nhantin` (
+  `maThongBao` int NOT NULL AUTO_INCREMENT,
+  `noiDung` text COLLATE utf8mb4_unicode_ci,
+  `maNguoiGui` int DEFAULT NULL,
+  `maNguoiNhan` int DEFAULT NULL,
+  `ngayGui` datetime DEFAULT CURRENT_TIMESTAMP,
+  `phanHoi` text COLLATE utf8mb4_unicode_ci,
+  `trangThai` enum('chua_xem','da_xem') COLLATE utf8mb4_unicode_ci DEFAULT 'chua_xem',
+  `thoiGian` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`maThongBao`),
+  KEY `fk_thongbao_nguoiGui` (`maNguoiGui`),
+  KEY `fk_thongbao_nguoiNhan` (`maNguoiNhan`)
+) ENGINE=InnoDB AUTO_INCREMENT=230 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `nhantin`
+-- Dumping data for table `nhantin`
 --
 
 INSERT INTO `nhantin` (`maThongBao`, `noiDung`, `maNguoiGui`, `maNguoiNhan`, `ngayGui`, `phanHoi`, `trangThai`, `thoiGian`) VALUES
@@ -507,45 +584,61 @@ INSERT INTO `nhantin` (`maThongBao`, `noiDung`, `maNguoiGui`, `maNguoiNhan`, `ng
 (214, 'Chào anh/chị, em rất vui được hỗ trợ ạ!\n\nVề dòng xe ô tô, cửa hàng em đang có một số lựa chọn rất hấp dẫn, từ xe sedan, SUV hạng sang đến xe điện đời mới, và cả xe tải phục vụ công việc. Anh/chị tham khảo nhé:\n\n1.  **VinFast VF8 2025** - Một lựa chọn hiện đại và tiết kiệm!\n    *   Giá chỉ: **850.000.000đ**\n    *   Chiếc VF8 Plus này đẹp như mới, Odo chỉ 15.000 km, còn gói thuê pin cố định không giới hạn km. Đặc biệt là còn bảo hành chính hãng đến 10 năm, anh/chị hoàn toàn yên tâm sử dụng lâu dài ạ!\n    *   Link: http://localhost/bandocu1/product.php?id=49\n\n2.  **Mercedes C200 đời 2020** - Sang trọng, đẳng cấp và vận hành mượt mà!\n    *   Giá cực tốt: **1.400.000.000đ**\n    *   Xe gia đình đi kỹ, bảo dưỡng đầy đủ, nội ngoại thất còn rất mới. Máy êm, lái cực bốc, cách âm hoàn hảo đúng chất Mer. Cam kết không đâm đụng, không ngập nước, bao check hãng toàn quốc ạ.\n    *   Link: http://localhost/bandocu1/product.php?id=50\n\n3.  **BMW X5 2015** - Mạnh mẽ, đầm chắc và vẫn rất thời thượng!\n    *   Giá: **1.000.000.000đ**\n    *   Chiếc SUV này được gia đình em sử dụng kỹ, bảo dưỡng định kỳ. Nội thất ghế da cao cấp, âm thanh hay, điều hòa mát sâu. Xe nguyên bản, cam kết không đâm đụng, ngập nước, bao check thoải mái luôn ạ.\n    *   Link: http://localhost/bandocu1/product.php?id=61\n\n4.  **Ford Laser 2003** - Bền bỉ, đầy đủ tiện nghi, giá cực mềm!\n    *   Giá siêu hấp dẫn: **4.999.000đ**\n    *   Xe đã được bảo dưỡng định kỳ, mua về là chạy ngay. Đồ chơi thì không thiếu gì: màn Android 4G, camera hành trình, camera lùi nét căng. Lốp mới, đủ 2 chìa khóa. Sedan rộng rãi, đi cực thích anh/chị nhé!\n    *   Link: http://localhost/bandocu1/product.php?id=88\n\n5.  **Volvo XC90 T6 Inscription đời 2021** - An toàn đỉnh cao, full option!\n    *   Giá: **999.000.000đ**\n    *   Chiếc xe đẹp xuất sắc, sơn zin cực nhiều, full lịch sử bảo dưỡng hãng. Nổi bật với loa Bowers & Wilkins, ghế Massage/Làm mát, Camera 360, phanh khoảng cách, treo khí nén cực êm. Cam kết không đâm đụng, ngập nước, bao check hãng toàn quốc. Odo 60.000km ạ.\n    *   Link: http://localhost/bandocu1/product.php?id=89\n\n6.  **Xe điện VinFast VF5 Plus 2025 Xám** - Lựa chọn nhỏ gọn, linh hoạt cho đô thị!\n    *   Giá: **400.000.000đ**\n    *   Phiên bản VF5 Plus 2025 màu xám xi măng cá tính, Odo 33.000 km, xe còn bảo hiểm thân vỏ đầy đủ. Rất phù hợp cho anh/chị nào thích xe nhỏ gọn, tiết kiệm và thân thiện môi trường.\n    *   Link: http://localhost/bandocu1/product.php?id=91\n\n7.  **KIA K2700 SX 2014** - Xe tải nhỏ phục vụ công việc, chất lượng cao!\n    *   Giá: **179.000.000đ**\n    *   Xe đẹp, có màn hình, cam hành trình, cam lùi đầy đủ. Thùng sàn inox, lốp đẹp, khám phí dài, điều hòa mát lạnh. Rất thích hợp cho anh/chị nào cần xe chở hàng mà vẫn tiện nghi ạ.\n    *   Link: http://localhost/bandocu1/product.php?id=93\n\n8.  **Đầu kéo HOWO 420 đời 2021** - Đối tác tin cậy cho vận tải chuyên nghiệp!\n    *   Giá: **700.000.000đ**\n    *   Chiếc đầu kéo HOWO đời 2021, cầu dầu, máy 420. Xe nguyên zin, hồ sơ rút sẵn, mua về là có thể lăn bánh ngay để phục vụ công việc vận chuyển hàng hóa ạ.\n    *   Link: http://localhost/bandocu1/product.php?id=94\n\nAnh/chị quan tâm đến mẫu xe nào hoặc cần thêm thông tin chi tiết, đừng ngần ngại cho em biết nhé. Em luôn sẵn lòng hỗ trợ ạ!', 9999, 10000, '2026-08-02 13:46:42', NULL, 'da_xem', '2026-08-02 06:46:42'),
 (215, 'Đây là file hóa đơn mua hàng của em hả shop', 10000, 2, '2026-08-07 16:50:48', NULL, 'da_xem', '2026-08-07 09:50:48'),
 (216, 'đúng rồi bạn', 2, 10000, '2026-08-07 16:51:38', NULL, 'da_xem', '2026-08-07 09:51:38'),
-(217, '📄 Hóa đơn #119', 2, 10000, '2026-08-08 14:56:52', NULL, 'da_xem', '2026-08-08 07:56:52');
+(217, '📄 Hóa đơn #119', 2, 10000, '2026-08-08 14:56:52', NULL, 'da_xem', '2026-08-08 07:56:52'),
+(218, 'Báo cáo liên quan đến tài khoản của bạn đang được Admin xem xét.', 9999, 2, '2026-09-03 21:52:07', NULL, 'da_xem', '2026-09-03 14:52:07'),
+(219, 'Báo cáo của bạn đang được Admin xem xét.', 9999, 1, '2026-09-03 21:52:07', NULL, 'da_xem', '2026-09-03 14:52:07'),
+(220, 'Báo cáo liên quan đến tài khoản của bạn đã được Admin xác minh.', 9999, 2, '2026-09-03 21:53:22', NULL, 'da_xem', '2026-09-03 14:53:22'),
+(221, 'Báo cáo của bạn đã được Admin xác minh.', 9999, 1, '2026-09-03 21:53:22', NULL, 'da_xem', '2026-09-03 14:53:22'),
+(222, 'Báo cáo liên quan đến tài khoản của bạn đã được Admin từ chối.', 9999, 2, '2026-09-03 22:30:48', NULL, 'da_xem', '2026-09-03 15:30:48'),
+(223, 'Báo cáo của bạn đã được Admin từ chối.', 9999, 1, '2026-09-03 22:30:48', NULL, 'da_xem', '2026-09-03 15:30:48'),
+(224, 'Báo cáo liên quan đến tài khoản của bạn đã được Admin xác minh.', 9999, 2, '2026-09-03 22:32:27', NULL, 'da_xem', '2026-09-03 15:32:27'),
+(225, 'Báo cáo của bạn đã được Admin xác minh.', 9999, 1, '2026-09-03 22:32:27', NULL, 'da_xem', '2026-09-03 15:32:27'),
+(226, 'Báo cáo liên quan đến tài khoản của bạn đã được Admin xác minh.', 9999, 2, '2026-09-03 22:34:08', NULL, 'chua_xem', '2026-09-03 15:34:08'),
+(227, 'Báo cáo của bạn đã được Admin xác minh.', 9999, 1, '2026-09-03 22:34:08', NULL, 'da_xem', '2026-09-03 15:34:08'),
+(228, 'Báo cáo liên quan đến tài khoản của bạn đang được Admin xem xét.', 9999, 14, '2026-09-04 21:27:41', NULL, 'da_xem', '2026-09-04 14:27:41'),
+(229, 'Báo cáo của bạn đang được Admin xem xét.', 9999, 9, '2026-09-04 21:27:41', NULL, 'da_xem', '2026-09-04 14:27:41');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `sanpham`
+-- Table structure for table `sanpham`
 --
 
-CREATE TABLE `sanpham` (
-  `maSanPham` int(11) NOT NULL,
-  `tenSanPham` varchar(100) DEFAULT NULL,
-  `moTa` text DEFAULT NULL,
-  `gia` decimal(15,2) DEFAULT 0.00,
-  `soLuong` int(11) DEFAULT 0,
-  `tinhTrang` varchar(50) DEFAULT NULL,
-  `video` varchar(255) DEFAULT NULL,
-  `hinhAnh` varchar(255) DEFAULT NULL,
-  `maNguoiBan` int(11) DEFAULT NULL,
-  `hinhAnh1` varchar(255) DEFAULT NULL,
-  `hinhAnh2` varchar(255) DEFAULT NULL,
-  `hinhAnh3` varchar(255) DEFAULT NULL,
-  `hinhanh4` varchar(255) DEFAULT NULL,
-  `hinhanh5` varchar(255) DEFAULT NULL,
-  `hinhanh6` varchar(255) DEFAULT NULL,
-  `maDanhMuc` int(11) DEFAULT NULL,
-  `trangThai` tinyint(1) NOT NULL DEFAULT 1 COMMENT '1 = hiện, 0 = ẩn',
-  `duyetTrangThai` tinyint(1) DEFAULT 0,
-  `giamGia` int(11) DEFAULT 0,
-  `tuChoiSuKien` tinyint(1) DEFAULT 1,
-  `luotXem` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `sanpham`;
+CREATE TABLE IF NOT EXISTS `sanpham` (
+  `maSanPham` int NOT NULL AUTO_INCREMENT,
+  `tenSanPham` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `moTa` text COLLATE utf8mb4_unicode_ci,
+  `gia` decimal(15,2) DEFAULT '0.00',
+  `soLuong` int DEFAULT '0',
+  `tinhTrang` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `video` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hinhAnh` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `maNguoiBan` int DEFAULT NULL,
+  `hinhAnh1` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hinhAnh2` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hinhAnh3` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hinhanh4` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hinhanh5` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hinhanh6` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `maDanhMuc` int DEFAULT NULL,
+  `trangThai` tinyint(1) NOT NULL DEFAULT '1' COMMENT '1 = hiện, 0 = ẩn',
+  `duyetTrangThai` tinyint(1) DEFAULT '0',
+  `giamGia` int DEFAULT '0',
+  `tuChoiSuKien` tinyint(1) DEFAULT '1',
+  `luotXem` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`maSanPham`),
+  KEY `fk_sanpham_nguoiBan` (`maNguoiBan`),
+  KEY `fk_sanpham_danhmuc` (`maDanhMuc`)
+) ENGINE=InnoDB AUTO_INCREMENT=114 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `sanpham`
+-- Dumping data for table `sanpham`
 --
 
 INSERT INTO `sanpham` (`maSanPham`, `tenSanPham`, `moTa`, `gia`, `soLuong`, `tinhTrang`, `video`, `hinhAnh`, `maNguoiBan`, `hinhAnh1`, `hinhAnh2`, `hinhAnh3`, `hinhanh4`, `hinhanh5`, `hinhanh6`, `maDanhMuc`, `trangThai`, `duyetTrangThai`, `giamGia`, `tuChoiSuKien`, `luotXem`) VALUES
 (1, 'Airpods Max Apple', 'Airport', 12900000.00, 1, 'Còn hàng', NULL, '1761191772_Airpods_Max_Apple.png', 2, '1761652958_1_23_1.jpg', '1761652958_2_23_2.jpg', '1761652958_3_23_3.jpg', NULL, NULL, NULL, 4, 1, 1, 0, 1, 2),
-(2, 'Cặp củ loa dài rộng 18CM', 'Loa rộng 18cm cũ', 245000.00, 3, 'Còn hàng', NULL, '1761191817_C___p_c____loa_d__i_r___ng_18CM.png', 2, '1761654123_1_21_1.jpg', '1761654123_2_21_2.jpg', '1761654123_3_21_3.jpg', '0', NULL, NULL, 4, 1, 1, 0, 1, 0),
+(2, 'Cặp củ loa dài rộng 18CM', 'Loa rộng 18cm cũ', 245000.00, 3, 'Còn hàng', NULL, '1761191817_C___p_c____loa_d__i_r___ng_18CM.png', 2, '1761654123_1_21_1.jpg', '1761654123_2_21_2.jpg', '1761654123_3_21_3.jpg', '0', NULL, NULL, 4, 1, 1, 0, 1, 2),
 (4, 'Dàn karaoke MK Acoustic', 'Dàn karaoke MK Acoustic nghe ổn', 26000000.00, 3, 'Còn hàng', NULL, '1761191894_D__n_karaoke_MK_Acoustic.png', 2, '1761653947_1_19_1.jpg', '1761653947_2_19_2.jpg', '1761653947_3_19_3.jpg', '0', NULL, NULL, 3, 1, 1, 0, 1, 0),
 (5, 'Dell Latitude 7400', 'Máy dùng 98%', 12000000.00, 4, 'Còn hàng', NULL, '1761191919_Dell_Latitude_7400.png', 2, '1761653922_1_18_1.jpg', '1761653922_2_18_2.jpg', '1761653922_3_18_3.jpg', '0', NULL, NULL, 5, 1, 1, 0, 1, 2),
 (6, 'Imac 2015 i5', 'Dùng 99% không lỗi', 12500000.00, 3, 'Còn hàng', NULL, '1761191961_Imac_2015_i5.png', 2, '1761653894_1_17_1.jpg', '1761653894_2_17_2.jpg', '1761653894_3_17_3.jpg', '0', NULL, NULL, 6, 1, 1, 0, 1, 0),
@@ -614,84 +707,93 @@ INSERT INTO `sanpham` (`maSanPham`, `tenSanPham`, `moTa`, `gia`, `soLuong`, `tin
 (90, 'Yamaha R15V3 2019 máy zin biển số 67', 'Yamaha R15V3 2019 biển số 67\r\nGiấy tờ đầy đủ , giao cccd chủ \r\nMáy móc bao zin êm\r\nDàn áo , chânn sạch đẹp\r\nXe lên được vài món đồ chơi kiểng như hình\r\nMọi chức năng hoạt động tốt', 29900000.00, 20, 'Còn hàng', NULL, 'r152.0.jpg', 13, 'r152.1.jpg', 'r152.2.jpg', 'r152.3.jpg', '0', NULL, NULL, 10, 1, 1, 0, 1, 597),
 (91, 'Xe điện VinFast VF5 Plus 2025 Xám', 'VF5 Plus 2025 xám xi măng\r\nOdo: 3v3 km\r\nXe còn bảo hiểm thân vỏ', 400000000.00, 30, 'Còn hàng', NULL, 'vf3.0.jpg', 13, 'vf3.2.jpg', 'vf3.3.jpg', 'vf3.1.jpg', '0', NULL, NULL, 8, 1, 1, 0, 1, 889),
 (92, 'Suzuki GSX 150r 2020', '𝗡𝗵𝗮̣̂𝗻 𝗚𝗶𝗮𝗼 𝗟𝘂̛𝘂 - 𝗠𝘂𝗮 𝗕𝗮́𝗻 - Đ𝗼̂̉𝗶 𝗖𝗮́𝗰 𝗫𝗲 𝗟𝗲̂𝗻 Đ𝗼̛̀𝗶 𝗚𝗶𝗮́ 𝗧𝗼̂́𝘁\r\n✔ Bao Check test 1 đổi 1 Miễn Phí Trong 1 Tuần \r\n✔ Hỗ trợ trả góp đến 45tr chỉ cần CCCD\r\n✔ Hỗ trợ trả góp 0% cho thẻ tín dụng\r\n✔ Hỗ trợ trả góp cho cả ae nợ chú ý, xấu\r\n✔ Bảo hành động cơ xe 2 năm', 29000000.00, 99, 'Còn hàng', NULL, 'su1.0.jpg', 13, 'su1.1.jpg', 'su1.3.jpg', 'su1.2.jpg', '0', NULL, NULL, 10, 1, 1, 0, 1, 8806),
-(93, 'KIA k2700 xe đẹp sx2014i', 'KIA K2700 SX 2014 xe đẹp. có màn hình cam hanh trình cam lùi. thùng sàn inox. lốp đẹp. khám phí dài. điều hòa mát. xe chất lượng các bác hợp việc đến xem xe nhé', 179000000.00, 49, 'Còn hàng', NULL, 'xetai1.0jpg.jpg', 13, 'xetai1.1.jpg', 'xetai1.3.jpg', 'xetai1.2.jpg', '0', NULL, NULL, 8, 1, 1, 0, 1, 3469),
+(93, 'KIA k2700 xe đẹp sx2014i', 'KIA K2700 SX 2014 xe đẹp. có màn hình cam hanh trình cam lùi. thùng sàn inox. lốp đẹp. khám phí dài. điều hòa mát. xe chất lượng các bác hợp việc đến xem xe nhé', 179000000.00, 49, 'Còn hàng', NULL, 'xetai1.0jpg.jpg', 13, 'xetai1.1.jpg', 'xetai1.3.jpg', 'xetai1.2.jpg', '0', NULL, NULL, 8, 1, 1, 0, 1, 3471),
 (94, 'Đầu kéo HOWO 420, đời 2021.', 'Bán đầu kéo HOWO đời 2021,cầu dầu, máy 420, xe nguyên zin, hồ sơ rút sãn.', 700000000.00, 2, 'Còn hàng', NULL, 'keo1.0.jpg', 13, 'keo1.1.jpg', 'keo1.3.jpg', 'keo1.4.jpg', '0', NULL, NULL, 8, 1, 1, 0, 1, 6744),
 (96, 'Xe máy điện Vespa màu Xám lịch sự - bền bỉ', 'Xe còn khá mới anh em giúp em', 17990000.00, 99, 'Còn hàng', NULL, 'xedien1.0.jpg', 13, 'xedien1.1.jpg', 'xedien1.3.jpg', NULL, '0', NULL, NULL, 10, 1, 1, 0, 1, 4590),
-(97, 'Xe đạp trợ lực Nhật Bản 20 inch', 'xe đạp trợ lưc nhật bãi pin mới bh 12tháng bánh 20inch khung nhôm full tính năng', 10000000.00, 20, 'Còn hàng', NULL, 'dap2.0.jpg', 13, 'dap2.2.jpg', 'dap2.3.jpg', 'dap2.1.jpg', '0', NULL, NULL, 11, 1, 1, 0, 1, 9884),
+(97, 'Xe đạp trợ lực Nhật Bản 20 inch', 'xe đạp trợ lưc nhật bãi pin mới bh 12tháng bánh 20inch khung nhôm full tính năng', 10000000.00, 20, 'Còn hàng', NULL, 'dap2.0.jpg', 13, 'dap2.2.jpg', 'dap2.3.jpg', 'dap2.1.jpg', '0', NULL, NULL, 11, 1, 1, 0, 1, 9886),
 (98, 'Xe đạp địa hình Bianchi Magma 29.2', 'Pass xe đạp Bianchi magma 29.2 chính hãng hình thức 98% đẹp ít sử dụng size 29 inch phù hợp ng chiều cao m7 -m85 đi đẹp xe khung nhôm aluminum siêu nhẹ vành size 29 phuộc suntour êm mọi địa hình bộ chuyển động shimano alivio 2x9,phanh đĩa thuỷ lực,lốp kenda chính hãng xe chính hãng của Ý phù hợp cho ng mới bắt đầu và đẹp xe thường xuyên xe khung siêu bền và lâu dài', 20000000.00, 38, 'Còn hàng', NULL, 'd4.0.jpg', 13, 'd4.1.jpg', 'd4.2.jpg', NULL, '0', NULL, NULL, 11, 1, 1, 0, 1, 6549),
-(99, 'Kawasaki Zx25R 2022 abs.', '✔️ Màu đen đỏ ngầu chất sport, đời form đại diện Sport của nhà Kawasaki \r\n✔️ Động cơ 250cc , năng động , Công nghệ fun xăng điện tử, phanh đĩa to 2 kênh ABS, máy êm cực mượt, đầm xe. xe đã lên đôi Lốp to 190 siêu to\r\n✔️ Date 2022 abs  biển số 29 odo 11000 . Bảo hành đầy đủ 12 tháng\r\n✔️ Bảo hành Cam kết xe rất mới nguyên bản tuyệt đối\r\n✔️ Cam kết xe không tai nạn, không ngập nước', 85000000.00, 9, 'Còn hàng', 'kawa400.mp4', 'ka1.0.jpg', 14, 'ka1.1.jpg', 'ka1.2.jpg', 'ka1.3.jpg', NULL, NULL, NULL, 10, 1, 1, 0, 1, 8793),
-(100, 'BMW 2015 320i', 'can bán bmw 320i máy mới B48 xe màu trắng xe còn nguyên bản', 500000000.00, 10, 'Còn hàng', 'bwm320i.mp4', '320i1.0.jpg', 14, '320i1.1.jpg', '320i1.2.jpg', '320i1.3.jpg', NULL, NULL, NULL, 8, 1, 1, 0, 1, 9006),
-(101, 'BMW S1000RR 2018, XE ĐẸP ODO 22K', 'BMW S1000RR – hàng chơi khỏi bàn\r\n\r\n• ĐK lần đầu 2018\r\n• Odo 22.000km – siêu lướt - biển Sg \r\n• Màu xanh HP – gắp bạc nhìn là mê\r\n\r\n🔧 Đồ chơi đã lên sẵn:\r\n• Pô Austin Racing slip-on real\r\n• Chống đổ T-Rex\r\n• Bảo vệ lốc GB Racing\r\n• Chắn gió\r\n• Ốp sườn carbon\r\n• Ốp dè con carbon\r\n• Pát tăng sên\r\n• Cặp vỏ Pirelli Rosso còn dày cui', 499000000.00, 2, 'Còn hàng', 'ca2.0.mp4', 'ca2.0.jpg', 14, 'ca2.4.jpg', 'ca2.5.jpg', 'ca2.3.jpg', NULL, NULL, NULL, 10, 1, 1, 0, 1, 12216),
-(103, 'Nissan 370Z Nismo', '💥💥 Nissan #370z_Nismo sx 2020 độc bản siêu hiếm lướt nhẹ đúng 4.567 km căng đét như xe mới trong hãng 🔥🔥\r\n1 viên duy 1’ tại thị trường\r\n✅𝐌𝐚̀𝐮 𝐱𝐞: Đen - nội thất đỏ\r\n✅𝐒𝐚̉𝐧 𝐱𝐮𝐚̂́𝐭: 2020\r\n©️ 𝑂𝑑𝑜 𝑐ℎ𝑢𝑎̂̉𝑛: 4.567 km - mới như xe trong hãng thiếu mỗi cái thùng 🔥\r\n👌𝐓𝐢̀𝐧𝐡 𝐭𝐫𝐚̣𝐧𝐠 𝐱𝐞: Xe cá nhân 1 chủ siêu lướt 4.567 km tiết kiệm ngay 3🧄\r\n', 3999000000.00, 0, 'Hết hàng', 'nissan2.0.mp4', 'nissan2.0.jpg', 14, 'nissan2.1.jpg', 'nisson2.3.jpg', 'nisson2.4.jpg', 'nisson2.2.jpg', NULL, NULL, 8, 1, 1, 0, 1, 7986),
-(109, 'Canon EOS M50 + 15-45mm (Màu trắng), Mới 97%', 'Độ phân giải 24,1 MP, bộ cảm biến CMOS APS-C\r\nDual pixel CMOS AF\r\nBộ xử lý hình ảnh DIGIC 8\r\nVideo 4K và Quay phim HD 720p120\r\nISO: 100-25600 (mở rộng ISO: 51200)\r\nChụp Liên tục: Lên đến 10 khung hình/giây (ở servo AF: lên đến 7,4 khung hình/giây)\r\nMàn hình: EVF: 2,36 điểm ảnh\r\nWi-Fi · Bluetooth · Đã cài đặt NFC\r\nKết hợp hệ thống chống rung 5 trục\r\nỐng kính STM EF-M 15-45mm f / 3.5-6.3 IS', 15000000.00, 50, 'Còn hàng', NULL, '1775051683_mayanh99.jpg', 2, NULL, NULL, NULL, NULL, NULL, NULL, 12, 1, 1, 0, 1, 4791),
-(113, 'Xe AB Đời 2019 cao cấp', 'Xe AB (Honda Air Blade) là dòng xe tay ga thể thao phổ biến tại Việt Nam. Xe có thiết kế góc cạnh, mạnh mẽ với hai tùy chọn động cơ chính là 125cc và 160cc, trang bị đèn LED hiện đại, hệ thống khóa thông minh Smart Key, phanh ABS (tùy phiên bản) và cốp chứa đồ rộng rãi.', 49000000.00, 27, 'Còn hàng', NULL, '1786174071_anhab2019.png', 2, NULL, NULL, NULL, NULL, NULL, NULL, 10, 1, 1, 10, 1, 10);
+(99, 'Kawasaki Zx25R 2022 abs.', '✔️ Màu đen đỏ ngầu chất sport, đời form đại diện Sport của nhà Kawasaki \r\n✔️ Động cơ 250cc , năng động , Công nghệ fun xăng điện tử, phanh đĩa to 2 kênh ABS, máy êm cực mượt, đầm xe. xe đã lên đôi Lốp to 190 siêu to\r\n✔️ Date 2022 abs  biển số 29 odo 11000 . Bảo hành đầy đủ 12 tháng\r\n✔️ Bảo hành Cam kết xe rất mới nguyên bản tuyệt đối\r\n✔️ Cam kết xe không tai nạn, không ngập nước', 85000000.00, 9, 'Còn hàng', 'kawa400.mp4', 'ka1.0.jpg', 14, 'ka1.1.jpg', 'ka1.2.jpg', 'ka1.3.jpg', NULL, NULL, NULL, 10, 1, 1, 0, 1, 8795),
+(100, 'BMW 2015 320i', 'can bán bmw 320i máy mới B48 xe màu trắng xe còn nguyên bản', 500000000.00, 10, 'Còn hàng', 'bwm320i.mp4', '320i1.0.jpg', 14, '320i1.1.jpg', '320i1.2.jpg', '320i1.3.jpg', NULL, NULL, NULL, 8, 1, 1, 0, 1, 9008),
+(101, 'BMW S1000RR 2018, XE ĐẸP ODO 22K', 'BMW S1000RR – hàng chơi khỏi bàn\r\n\r\n• ĐK lần đầu 2018\r\n• Odo 22.000km – siêu lướt - biển Sg \r\n• Màu xanh HP – gắp bạc nhìn là mê\r\n\r\n🔧 Đồ chơi đã lên sẵn:\r\n• Pô Austin Racing slip-on real\r\n• Chống đổ T-Rex\r\n• Bảo vệ lốc GB Racing\r\n• Chắn gió\r\n• Ốp sườn carbon\r\n• Ốp dè con carbon\r\n• Pát tăng sên\r\n• Cặp vỏ Pirelli Rosso còn dày cui', 499000000.00, 2, 'Còn hàng', 'ca2.0.mp4', 'ca2.0.jpg', 14, 'ca2.4.jpg', 'ca2.5.jpg', 'ca2.3.jpg', NULL, NULL, NULL, 10, 1, 1, 0, 1, 12232),
+(103, 'Nissan 370Z Nismo', '💥💥 Nissan #370z_Nismo sx 2020 độc bản siêu hiếm lướt nhẹ đúng 4.567 km căng đét như xe mới trong hãng 🔥🔥\r\n1 viên duy 1’ tại thị trường\r\n✅𝐌𝐚̀𝐮 𝐱𝐞: Đen - nội thất đỏ\r\n✅𝐒𝐚̉𝐧 𝐱𝐮𝐚̂́𝐭: 2020\r\n©️ 𝑂𝑑𝑜 𝑐ℎ𝑢𝑎̂̉𝑛: 4.567 km - mới như xe trong hãng thiếu mỗi cái thùng 🔥\r\n👌𝐓𝐢̀𝐧𝐡 𝐭𝐫𝐚̣𝐧𝐠 𝐱𝐞: Xe cá nhân 1 chủ siêu lướt 4.567 km tiết kiệm ngay 3🧄\r\n', 3999000000.00, 0, 'Hết hàng', 'nissan2.0.mp4', 'nissan2.0.jpg', 14, 'nissan2.1.jpg', 'nisson2.3.jpg', 'nisson2.4.jpg', 'nisson2.2.jpg', NULL, NULL, 8, 1, 1, 0, 1, 7988),
+(109, 'Canon EOS M50 + 15-45mm (Màu trắng), Mới 97%', 'Độ phân giải 24,1 MP, bộ cảm biến CMOS APS-C\r\nDual pixel CMOS AF\r\nBộ xử lý hình ảnh DIGIC 8\r\nVideo 4K và Quay phim HD 720p120\r\nISO: 100-25600 (mở rộng ISO: 51200)\r\nChụp Liên tục: Lên đến 10 khung hình/giây (ở servo AF: lên đến 7,4 khung hình/giây)\r\nMàn hình: EVF: 2,36 điểm ảnh\r\nWi-Fi · Bluetooth · Đã cài đặt NFC\r\nKết hợp hệ thống chống rung 5 trục\r\nỐng kính STM EF-M 15-45mm f / 3.5-6.3 IS', 15000000.00, 50, 'Còn hàng', NULL, '1775051683_mayanh99.jpg', 2, NULL, NULL, NULL, NULL, NULL, NULL, 12, 1, 1, 0, 1, 4835),
+(113, 'Xe AB Đời 2019 cao cấp', 'Xe AB (Honda Air Blade) là dòng xe tay ga thể thao phổ biến tại Việt Nam. Xe có thiết kế góc cạnh, mạnh mẽ với hai tùy chọn động cơ chính là 125cc và 160cc, trang bị đèn LED hiện đại, hệ thống khóa thông minh Smart Key, phanh ABS (tùy phiên bản) và cốp chứa đồ rộng rãi.', 49000000.00, 27, 'Còn hàng', NULL, '1786174071_anhab2019.png', 2, NULL, NULL, NULL, NULL, NULL, NULL, 10, 1, 1, 10, 1, 62);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `taikhoan`
+-- Table structure for table `taikhoan`
 --
 
-CREATE TABLE `taikhoan` (
-  `maTaiKhoan` int(11) NOT NULL,
-  `tenNguoiDung` varchar(100) DEFAULT NULL,
-  `tenDangNhap` varchar(100) NOT NULL,
-  `matKhau` varchar(255) NOT NULL,
-  `soDienThoai` varchar(20) DEFAULT NULL,
-  `diaChi` varchar(255) DEFAULT NULL,
-  `vaitro` enum('admin','seller','buyer') NOT NULL,
-  `trangThai` tinyint(1) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `taikhoan`;
+CREATE TABLE IF NOT EXISTS `taikhoan` (
+  `maTaiKhoan` int NOT NULL AUTO_INCREMENT,
+  `tenNguoiDung` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tenDangNhap` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `matKhau` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `soDienThoai` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `diaChi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `avatar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `vaitro` enum('admin','seller','buyer') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `trangThai` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`maTaiKhoan`),
+  UNIQUE KEY `uk_tenDangNhap` (`tenDangNhap`)
+) ENGINE=InnoDB AUTO_INCREMENT=10011 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `taikhoan`
+-- Dumping data for table `taikhoan`
 --
 
-INSERT INTO `taikhoan` (`maTaiKhoan`, `tenNguoiDung`, `tenDangNhap`, `matKhau`, `soDienThoai`, `diaChi`, `vaitro`, `trangThai`) VALUES
-(1, 'NguyenVan', 'mua@gmail.com', '$2y$10$PLu0.yaNMnEU.wKHFOGCTeRMoQeN.a5kfV7evgmDwQULghcyISkPK', '0321412388', 'Cần Thơ', 'buyer', 1),
-(2, 'Nguyen', 'ban@gmail.com', '$2y$12$bA9BOi/SyDTQ11TvS.c6UewQPYgaastFPgQO4YL9T5iwEkQr3PyJu', '0351268532', 'An Giang', 'seller', 1),
-(3, 'Nhi', 'ban1@gmail.com', '$2y$10$Tafvxk3n/PWRA3nHJ5eYHOl1n98SPccDOOeQwYv1PzQ/TDUDL7Cwi', '0842560721', 'Vĩnh Long', 'seller', 1),
-(7, 'Phu', 'nguoiban@gmail.com', '$2y$10$965nPYkyY3G1M6RzfHySM.91svOclqMNJ25FtYlLwviHRu0Rg7Q3.', '115', 'cam', 'seller', 1),
-(8, 'Lan', 'nguoimua@gmail.com', '$2y$10$Rdm4Vi1aGyTePAmg2YpXZ.su2fVKnwG5LyBtRASszt.GQQHfh06XC', '09672345124', '', 'buyer', 1),
-(9, 'Diep', 'admin1@gmail.com', '$2y$12$9u7PipS6f9l4mwAU4lSdWe9rRDo0wtsHyIf7Vhr2qRhu7v1faH8om', '0939011229', '', 'admin', 1),
-(10, 'nhan', 'nhan@gmail.com', '$2y$10$t8SUXuSLp1fMKy9FRrlqZOFd7icdZ4UUhG1GtQzQUhhUi.4N1Lx0y', '', '', 'buyer', 1),
-(12, 'Anh Tuấn', 'Atuan@gmail.com', '$2y$10$m4PdrNeyXY.ljv7gK1PyYu2H9JWGv.QsqCRnLII.hr0HIjQ6klztW', '01247473825', 'Châu Đốc An Giang', 'seller', 1),
-(13, 'Nguyễn Đức Lương', 'Aluong@gmail.com', '$2y$10$utCXOP8bFCLKvO9Wrr2PaOLxIugumFF.uUOi4uA2qAfxWNBIuPZqO', '0989898988', 'Phong Điền Cần Thơ', 'seller', 1),
-(14, 'Quang Thuận', 'thuan@gmail.com', '$2y$10$rvpyrrS5TYgJPS14bZykuu.3AiZHuUWLSGOMDfixzuDUteg0CDr9i', '0767676543', 'Ô Môn Cần Thơ', 'seller', 1),
-(15, 'test1@11', 'test1@11', '$2y$10$aiDtE5RPvPzKD71jP4ukpORzXOEb5Q1OMHyqNN/XgWae.cBIDfXTu', '0939011666', 'ấp 7', 'seller', 1),
-(16, 'test1@22', 'test1@22', '$2y$10$wbx3ry3pnF8/6hRC9SjWJugJrGTXMEA5md7xkYtohvDnTxUZlvMv.', '0763992600', 'ấp 7', 'seller', 1),
-(18, 'test099', 'mua2@gmail.com', '$2y$10$w.qrt9Hj3C48P/MTHghKPuYB0MUkTFXlRu.99Irov9nSu5/3KtmLC', '0984738489', 'Làng Vũ Đại', 'buyer', 1),
-(20, 'Thiên Kim', 'kim@gmail.com', '$2y$12$J92hW.gji4j30yYzJ4kSi.qbmzueuNRTYP50/wkw79K87MNUvGmMu', '0763992600', 'Phường 7-TPHCM', 'buyer', 1),
-(9999, 'AI Hỗ Trợ', 'ai_bot', '', NULL, NULL, 'admin', 1),
-(10000, 'phúc', 'phuc@gmail.com', '$2y$12$OzpQXeXJS19OxebLJFkKc.voU9.IpWRRPQ/qbM08Y5D7PXMtZzzHi', '0939011666', 'Hà TâyXuân Lộc-Hà Bắc', 'buyer', 1),
-(10001, 'Thiên phú', 'phu@gmail.com', '$2y$12$Jr6uWVDyHynDdxyaZ2/cj.HQWjiZiaE.o7gQ6UlKiC3Ggi8axLpmy', '0939011666', 'ấp Mỹ chánh,xã Hiệp Hưng,Thành Phố Cần Thơ', 'buyer', 1),
-(10002, 'Mẫn Nhi', 'Nhi2011@gmail.com', '$2y$12$7V4PIVul1bDmK9hT3wbrqOi4wTDmYgKU0vnnFSVFSwGZ8UEMZ6lSS', '0866645162', 'Huyện Chợ Mới Tỉnh An Giang', 'buyer', 0),
-(10003, 'Quang Hùng', 'hung@gmail.com', '$2y$10$2ytchKqK3wWHqk1ghb8u9.OJ7HxrITr/hYMOhJTrOrdD1Uh2VV5t.', '0976665437', 'Cà Mau', 'buyer', 1),
-(10004, 'Độ', 'Do@gmail.com', '$2y$10$wvnPiC0qPRFTCe.QN4v3Le5ZnjfD.H8xSQw0uOsQIdHdN8vxBEAiS', '0966657888', 'Thái Nguyên', 'buyer', 1),
-(10005, 'John', 'john01072005@gmail.com', '$2y$10$DnVvW91nwFqMCCe92u3BJ.tA/RM/8bOPo4hZREwXG4zVIBMcOqOfi', '0998865777', 'An Giang', 'seller', 1),
-(10006, 'Đức Nguyên', 'Nguyen@gmail.com', '$2y$10$gUSVDdgE0akgwnO7ACEtGe0Y4DmUBx0d79NFCByURjhpPmvEPqfkm', '0866645161', 'Huyện Chợ Mới Tỉnh An Giang', 'buyer', 1),
-(10007, 'Thiên Tài', 'tai@gmail.com', '$2y$10$0JsCHsk7Zq/I2OkvjABnpuX.i/XHIBBhW.xvsZBXztyVfdJn912T2', '0977688953', 'Huế', 'buyer', 1),
-(10008, 'Hoàng', 'hoan1234@gmail.com', '$2y$12$N.1XXteEmjluvw3kR2hp8uZTpAIlIRNkxiiJKNafSD7fBTpgXoBC2', '0837198200', 'Hà TâyXuân Lộc-Hà Bắc', 'buyer', 1);
+INSERT INTO `taikhoan` (`maTaiKhoan`, `tenNguoiDung`, `tenDangNhap`, `matKhau`, `soDienThoai`, `diaChi`, `avatar`, `vaitro`, `trangThai`) VALUES
+(1, 'NguyenVan', 'mua@gmail.com', '$2y$10$PLu0.yaNMnEU.wKHFOGCTeRMoQeN.a5kfV7evgmDwQULghcyISkPK', '0321412388', 'Cần Thơ', 'assets/img/avatars/user_1.png', 'buyer', 1),
+(2, 'Nguyenđây', 'ban@gmail.com', '$2y$12$FI.1JVe5mQLapvpylGs7xe9D5SEaFR9SiBRSb/6.i/hOy2RLSdZUS', '0351268532', 'An Giang', 'assets/img/avatars/user_2.png', 'seller', 1),
+(3, 'Nhi', 'ban1@gmail.com', '$2y$10$Tafvxk3n/PWRA3nHJ5eYHOl1n98SPccDOOeQwYv1PzQ/TDUDL7Cwi', '0842560721', 'Vĩnh Long', NULL, 'seller', 1),
+(7, 'Phu', 'nguoiban@gmail.com', '$2y$10$965nPYkyY3G1M6RzfHySM.91svOclqMNJ25FtYlLwviHRu0Rg7Q3.', '115', 'cam', NULL, 'seller', 1),
+(8, 'Lan', 'nguoimua@gmail.com', '$2y$10$Rdm4Vi1aGyTePAmg2YpXZ.su2fVKnwG5LyBtRASszt.GQQHfh06XC', '09672345124', '', NULL, 'buyer', 1),
+(9, 'Diep', 'admin1@gmail.com', '$2y$12$UFgq1XCxXBLK69lgIohdxOlfrIKpC5vIHv.7sPdK.LnJTSI/kOVwa', '0939011229', 'An Giang', 'assets/img/avatars/default.png', 'admin', 1),
+(10, 'nhan', 'nhan@gmail.com', '$2y$10$t8SUXuSLp1fMKy9FRrlqZOFd7icdZ4UUhG1GtQzQUhhUi.4N1Lx0y', '', '', NULL, 'buyer', 1),
+(12, 'Anh Tuấn', 'Atuan@gmail.com', '$2y$10$m4PdrNeyXY.ljv7gK1PyYu2H9JWGv.QsqCRnLII.hr0HIjQ6klztW', '01247473825', 'Châu Đốc An Giang', NULL, 'seller', 1),
+(13, 'Nguyễn Đức Lương', 'Aluong@gmail.com', '$2y$10$utCXOP8bFCLKvO9Wrr2PaOLxIugumFF.uUOi4uA2qAfxWNBIuPZqO', '0989898988', 'Phong Điền Cần Thơ', NULL, 'seller', 1),
+(14, 'Quang Thuận', 'thuan@gmail.com', '$2y$12$hJ.npWUp/hl.ktLW9k6EIeG0nq4rnTJwj.u5MoOiP5TQQSaQT3wQC', '0767676543', 'Ô Môn Cần Thơ', NULL, 'seller', 1),
+(15, 'test1@11', 'test1@11', '$2y$10$aiDtE5RPvPzKD71jP4ukpORzXOEb5Q1OMHyqNN/XgWae.cBIDfXTu', '0939011666', 'ấp 7', NULL, 'seller', 1),
+(16, 'test1@22', 'test1@22', '$2y$10$wbx3ry3pnF8/6hRC9SjWJugJrGTXMEA5md7xkYtohvDnTxUZlvMv.', '0763992600', 'ấp 7', NULL, 'seller', 1),
+(18, 'test099', 'mua2@gmail.com', '$2y$10$w.qrt9Hj3C48P/MTHghKPuYB0MUkTFXlRu.99Irov9nSu5/3KtmLC', '0984738489', 'Làng Vũ Đại', NULL, 'buyer', 1),
+(20, 'Thiên Kim', 'kim@gmail.com', '$2y$12$J92hW.gji4j30yYzJ4kSi.qbmzueuNRTYP50/wkw79K87MNUvGmMu', '0763992600', 'Phường 7-TPHCM', NULL, 'buyer', 1),
+(9999, 'AI Hỗ Trợ', 'ai_bot', '', NULL, NULL, NULL, 'admin', 1),
+(10000, 'phúc', 'phuc@gmail.com', '$2y$12$OzpQXeXJS19OxebLJFkKc.voU9.IpWRRPQ/qbM08Y5D7PXMtZzzHi', '0939011666', 'Hà TâyXuân Lộc-Hà Bắc', NULL, 'buyer', 1),
+(10001, 'Thiên phú', 'phu@gmail.com', '$2y$12$Jr6uWVDyHynDdxyaZ2/cj.HQWjiZiaE.o7gQ6UlKiC3Ggi8axLpmy', '0939011666', 'ấp Mỹ chánh,xã Hiệp Hưng,Thành Phố Cần Thơ', NULL, 'buyer', 1),
+(10002, 'Mẫn Nhi', 'Nhi2011@gmail.com', '$2y$12$7V4PIVul1bDmK9hT3wbrqOi4wTDmYgKU0vnnFSVFSwGZ8UEMZ6lSS', '0866645162', 'Huyện Chợ Mới Tỉnh An Giang', NULL, 'buyer', 0),
+(10003, 'Quang Hùng', 'hung@gmail.com', '$2y$10$2ytchKqK3wWHqk1ghb8u9.OJ7HxrITr/hYMOhJTrOrdD1Uh2VV5t.', '0976665437', 'Cà Mau', NULL, 'buyer', 1),
+(10004, 'Độ', 'Do@gmail.com', '$2y$10$wvnPiC0qPRFTCe.QN4v3Le5ZnjfD.H8xSQw0uOsQIdHdN8vxBEAiS', '0966657888', 'Thái Nguyên', NULL, 'buyer', 1),
+(10005, 'John', 'john01072005@gmail.com', '$2y$10$DnVvW91nwFqMCCe92u3BJ.tA/RM/8bOPo4hZREwXG4zVIBMcOqOfi', '0998865777', 'An Giang', NULL, 'seller', 1),
+(10006, 'Đức Nguyên', 'Nguyen@gmail.com', '$2y$10$gUSVDdgE0akgwnO7ACEtGe0Y4DmUBx0d79NFCByURjhpPmvEPqfkm', '0866645161', 'Huyện Chợ Mới Tỉnh An Giang', NULL, 'buyer', 1),
+(10007, 'Thiên Tài', 'tai@gmail.com', '$2y$10$0JsCHsk7Zq/I2OkvjABnpuX.i/XHIBBhW.xvsZBXztyVfdJn912T2', '0977688953', 'Huế', NULL, 'buyer', 1),
+(10008, 'Hoàng', 'hoan1234@gmail.com', '$2y$12$N.1XXteEmjluvw3kR2hp8uZTpAIlIRNkxiiJKNafSD7fBTpgXoBC2', '0837198200', 'Hà TâyXuân Lộc-Hà Bắc', NULL, 'buyer', 1),
+(10009, 'Aday', 'aday@gmai.com', '$2y$12$3xzCtJ4xtlvMt4NhZJhrUePpnjeuB6q8tJ/78OzygdJhx/VojT42y', '0351212311', 'An Giang', NULL, 'buyer', 1),
+(10010, 'Aem', 'aem@gmai.com', '$2y$12$ecK.xwmp4WTx2e5o6/Z/qu9CDsl.JrpQKOOdPzOzmt25dVsGpf0wG', '0351211211', 'An Giang', NULL, 'buyer', 1);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `thanhtoan`
+-- Table structure for table `thanhtoan`
 --
 
-CREATE TABLE `thanhtoan` (
-  `maThanhToan` int(11) NOT NULL,
-  `maDonHang` int(11) NOT NULL,
-  `phuongThuc` enum('cod','vnpay','fake_vnpay') NOT NULL,
+DROP TABLE IF EXISTS `thanhtoan`;
+CREATE TABLE IF NOT EXISTS `thanhtoan` (
+  `maThanhToan` int NOT NULL AUTO_INCREMENT,
+  `maDonHang` int NOT NULL,
+  `phuongThuc` enum('cod','vnpay','fake_vnpay') COLLATE utf8mb4_unicode_ci NOT NULL,
   `soTien` double NOT NULL,
-  `trangThai` enum('pending','paid','failed','success') DEFAULT 'pending',
-  `ngayThanhToan` datetime DEFAULT current_timestamp(),
-  `nganHang` varchar(50) DEFAULT NULL,
-  `maGiaoDich` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `trangThai` enum('pending','paid','failed','success') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `ngayThanhToan` datetime DEFAULT CURRENT_TIMESTAMP,
+  `nganHang` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `maGiaoDich` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`maThanhToan`),
+  KEY `fk_thanhtoan_donhang` (`maDonHang`)
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `thanhtoan`
+-- Dumping data for table `thanhtoan`
 --
 
 INSERT INTO `thanhtoan` (`maThanhToan`, `maDonHang`, `phuongThuc`, `soTien`, `trangThai`, `ngayThanhToan`, `nganHang`, `maGiaoDich`) VALUES
@@ -736,23 +838,27 @@ INSERT INTO `thanhtoan` (`maThanhToan`, `maDonHang`, `phuongThuc`, `soTien`, `tr
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `user_interactions`
+-- Table structure for table `user_interactions`
 --
 
-CREATE TABLE `user_interactions` (
-  `maInteraction` int(11) NOT NULL,
-  `maTaiKhoan` int(11) NOT NULL,
-  `maSanPham` int(11) NOT NULL,
-  `soLanXem` int(11) DEFAULT 1,
-  `yeuThich` tinyint(1) DEFAULT 0,
-  `lienHe` tinyint(1) DEFAULT 0,
-  `muaHang` tinyint(1) DEFAULT 0,
-  `thoiGianXem` int(11) DEFAULT 0,
-  `ngayCapNhat` datetime DEFAULT current_timestamp()
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `user_interactions`;
+CREATE TABLE IF NOT EXISTS `user_interactions` (
+  `maInteraction` int NOT NULL AUTO_INCREMENT,
+  `maTaiKhoan` int NOT NULL,
+  `maSanPham` int NOT NULL,
+  `soLanXem` int DEFAULT '1',
+  `yeuThich` tinyint(1) DEFAULT '0',
+  `lienHe` tinyint(1) DEFAULT '0',
+  `muaHang` tinyint(1) DEFAULT '0',
+  `thoiGianXem` int DEFAULT '0',
+  `ngayCapNhat` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`maInteraction`),
+  UNIQUE KEY `unique_user_product` (`maTaiKhoan`,`maSanPham`),
+  KEY `maSanPham` (`maSanPham`)
+) ENGINE=MyISAM AUTO_INCREMENT=94 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `user_interactions`
+-- Dumping data for table `user_interactions`
 --
 
 INSERT INTO `user_interactions` (`maInteraction`, `maTaiKhoan`, `maSanPham`, `soLanXem`, `yeuThich`, `lienHe`, `muaHang`, `thoiGianXem`, `ngayCapNhat`) VALUES
@@ -835,23 +941,40 @@ INSERT INTO `user_interactions` (`maInteraction`, `maTaiKhoan`, `maSanPham`, `so
 (77, 10000, 1, 1, 1, 0, 0, 0, '2026-08-02 13:55:42'),
 (78, 10000, 98, 1, 0, 0, 0, 0, '2026-08-04 20:11:42'),
 (79, 10000, 113, 2, 0, 0, 1, 0, '2026-08-08 14:35:25'),
-(80, 2, 113, 2, 0, 0, 0, 0, '2026-08-08 15:04:32');
+(80, 2, 113, 17, 0, 0, 0, 0, '2026-08-08 15:04:32'),
+(81, 1, 109, 13, 0, 0, 0, 0, '2026-09-02 18:47:11'),
+(82, 2, 109, 9, 0, 0, 0, 0, '2026-09-02 19:13:04'),
+(83, 2, 93, 1, 0, 0, 0, 0, '2026-09-02 19:21:27'),
+(84, 2, 101, 3, 0, 0, 0, 0, '2026-09-02 19:47:51'),
+(85, 2, 99, 1, 0, 0, 0, 0, '2026-09-02 21:12:01'),
+(86, 10010, 113, 2, 0, 0, 0, 0, '2026-09-02 21:16:22'),
+(87, 1, 97, 1, 0, 0, 0, 0, '2026-09-02 21:24:40'),
+(88, 1, 113, 6, 0, 0, 0, 0, '2026-09-02 21:31:00'),
+(89, 2, 103, 1, 0, 0, 0, 0, '2026-09-02 21:49:17'),
+(90, 1, 100, 1, 0, 0, 0, 0, '2026-09-03 20:01:29'),
+(91, 1, 101, 1, 0, 0, 0, 0, '2026-09-03 20:09:36'),
+(92, 9, 101, 4, 0, 0, 0, 0, '2026-09-04 21:08:52'),
+(93, 14, 113, 1, 0, 0, 0, 0, '2026-09-04 21:27:30');
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `yeuthich`
+-- Table structure for table `yeuthich`
 --
 
-CREATE TABLE `yeuthich` (
-  `maYeuThich` int(11) NOT NULL,
-  `maTaiKhoan` int(11) NOT NULL,
-  `maSanPham` int(11) NOT NULL,
-  `ngayYeuThich` datetime DEFAULT current_timestamp()
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `yeuthich`;
+CREATE TABLE IF NOT EXISTS `yeuthich` (
+  `maYeuThich` int NOT NULL AUTO_INCREMENT,
+  `maTaiKhoan` int NOT NULL,
+  `maSanPham` int NOT NULL,
+  `ngayYeuThich` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`maYeuThich`),
+  KEY `maTaiKhoan` (`maTaiKhoan`),
+  KEY `maSanPham` (`maSanPham`)
+) ENGINE=MyISAM AUTO_INCREMENT=76 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `yeuthich`
+-- Dumping data for table `yeuthich`
 --
 
 INSERT INTO `yeuthich` (`maYeuThich`, `maTaiKhoan`, `maSanPham`, `ngayYeuThich`) VALUES
@@ -927,221 +1050,27 @@ INSERT INTO `yeuthich` (`maYeuThich`, `maTaiKhoan`, `maSanPham`, `ngayYeuThich`)
 (75, 10000, 86, '2026-08-04 20:09:08');
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Indexes for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `banner`
+-- Indexes for table `sanpham`
 --
-ALTER TABLE `banner`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `chitietdonhang`
---
-ALTER TABLE `chitietdonhang`
-  ADD PRIMARY KEY (`maChiTiet`),
-  ADD KEY `fk_chitietdonhang_donhang` (`maDonHang`),
-  ADD KEY `fk_chitietdonhang_sanpham` (`maSanPham`),
-  ADD KEY `fk_chitietdonhang_nguoiBan` (`maNguoiBan`);
-
---
--- Chỉ mục cho bảng `counter`
---
-ALTER TABLE `counter`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `danhgia`
---
-ALTER TABLE `danhgia`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `uk_sanpham_nguoidung` (`maSanPham`,`maNguoiDung`),
-  ADD KEY `fk_danhgia_nguoidung` (`maNguoiDung`);
-
---
--- Chỉ mục cho bảng `danhmuc`
---
-ALTER TABLE `danhmuc`
-  ADD PRIMARY KEY (`maDanhMuc`);
-
---
--- Chỉ mục cho bảng `donhang`
---
-ALTER TABLE `donhang`
-  ADD PRIMARY KEY (`maDonHang`),
-  ADD KEY `fk_donhang_nguoiMua` (`maNguoiMua`);
-
---
--- Chỉ mục cho bảng `donhang_shop`
---
-ALTER TABLE `donhang_shop`
-  ADD PRIMARY KEY (`maDonHang_Shop`),
-  ADD KEY `maDonHang` (`maDonHang`),
-  ADD KEY `maNguoiMua` (`maNguoiMua`),
-  ADD KEY `maNguoiBan` (`maNguoiBan`);
-
---
--- Chỉ mục cho bảng `duyet_settings`
---
-ALTER TABLE `duyet_settings`
-  ADD PRIMARY KEY (`id`);
-
---
--- Chỉ mục cho bảng `giohang`
---
-ALTER TABLE `giohang`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_cart` (`maNguoiDung`,`maSanPham`),
-  ADD KEY `maSanPham` (`maSanPham`);
-
---
--- Chỉ mục cho bảng `nhantin`
---
-ALTER TABLE `nhantin`
-  ADD PRIMARY KEY (`maThongBao`),
-  ADD KEY `fk_thongbao_nguoiGui` (`maNguoiGui`),
-  ADD KEY `fk_thongbao_nguoiNhan` (`maNguoiNhan`);
-
---
--- Chỉ mục cho bảng `sanpham`
---
-ALTER TABLE `sanpham`
-  ADD PRIMARY KEY (`maSanPham`),
-  ADD KEY `fk_sanpham_nguoiBan` (`maNguoiBan`),
-  ADD KEY `fk_sanpham_danhmuc` (`maDanhMuc`);
 ALTER TABLE `sanpham` ADD FULLTEXT KEY `idx_fulltext` (`tenSanPham`,`moTa`);
 
 --
--- Chỉ mục cho bảng `taikhoan`
---
-ALTER TABLE `taikhoan`
-  ADD PRIMARY KEY (`maTaiKhoan`),
-  ADD UNIQUE KEY `uk_tenDangNhap` (`tenDangNhap`);
-
---
--- Chỉ mục cho bảng `thanhtoan`
---
-ALTER TABLE `thanhtoan`
-  ADD PRIMARY KEY (`maThanhToan`),
-  ADD KEY `fk_thanhtoan_donhang` (`maDonHang`);
-
---
--- Chỉ mục cho bảng `user_interactions`
---
-ALTER TABLE `user_interactions`
-  ADD PRIMARY KEY (`maInteraction`),
-  ADD UNIQUE KEY `unique_user_product` (`maTaiKhoan`,`maSanPham`),
-  ADD KEY `maSanPham` (`maSanPham`);
-
---
--- Chỉ mục cho bảng `yeuthich`
---
-ALTER TABLE `yeuthich`
-  ADD PRIMARY KEY (`maYeuThich`),
-  ADD KEY `maTaiKhoan` (`maTaiKhoan`),
-  ADD KEY `maSanPham` (`maSanPham`);
-
---
--- AUTO_INCREMENT cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- AUTO_INCREMENT cho bảng `banner`
+-- Constraints for table `baocao_shop`
 --
-ALTER TABLE `banner`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+ALTER TABLE `baocao_shop`
+  ADD CONSTRAINT `fk_baocao_nguoi` FOREIGN KEY (`maNguoiBaoCao`) REFERENCES `taikhoan` (`maTaiKhoan`),
+  ADD CONSTRAINT `fk_baocao_shop` FOREIGN KEY (`maShop`) REFERENCES `taikhoan` (`maTaiKhoan`);
 
 --
--- AUTO_INCREMENT cho bảng `chitietdonhang`
---
-ALTER TABLE `chitietdonhang`
-  MODIFY `maChiTiet` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=116;
-
---
--- AUTO_INCREMENT cho bảng `counter`
---
-ALTER TABLE `counter`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT cho bảng `danhgia`
---
-ALTER TABLE `danhgia`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
-
---
--- AUTO_INCREMENT cho bảng `danhmuc`
---
-ALTER TABLE `danhmuc`
-  MODIFY `maDanhMuc` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- AUTO_INCREMENT cho bảng `donhang`
---
-ALTER TABLE `donhang`
-  MODIFY `maDonHang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
-
---
--- AUTO_INCREMENT cho bảng `donhang_shop`
---
-ALTER TABLE `donhang_shop`
-  MODIFY `maDonHang_Shop` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
-
---
--- AUTO_INCREMENT cho bảng `duyet_settings`
---
-ALTER TABLE `duyet_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT cho bảng `giohang`
---
-ALTER TABLE `giohang`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
-
---
--- AUTO_INCREMENT cho bảng `nhantin`
---
-ALTER TABLE `nhantin`
-  MODIFY `maThongBao` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=218;
-
---
--- AUTO_INCREMENT cho bảng `sanpham`
---
-ALTER TABLE `sanpham`
-  MODIFY `maSanPham` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
-
---
--- AUTO_INCREMENT cho bảng `taikhoan`
---
-ALTER TABLE `taikhoan`
-  MODIFY `maTaiKhoan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10009;
-
---
--- AUTO_INCREMENT cho bảng `thanhtoan`
---
-ALTER TABLE `thanhtoan`
-  MODIFY `maThanhToan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
-
---
--- AUTO_INCREMENT cho bảng `user_interactions`
---
-ALTER TABLE `user_interactions`
-  MODIFY `maInteraction` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
-
---
--- AUTO_INCREMENT cho bảng `yeuthich`
---
-ALTER TABLE `yeuthich`
-  MODIFY `maYeuThich` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
-
---
--- Các ràng buộc cho các bảng đã đổ
---
-
---
--- Các ràng buộc cho bảng `chitietdonhang`
+-- Constraints for table `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
   ADD CONSTRAINT `fk_chitietdonhang_donhang` FOREIGN KEY (`maDonHang`) REFERENCES `donhang` (`maDonHang`) ON DELETE CASCADE,
@@ -1149,20 +1078,20 @@ ALTER TABLE `chitietdonhang`
   ADD CONSTRAINT `fk_chitietdonhang_sanpham` FOREIGN KEY (`maSanPham`) REFERENCES `sanpham` (`maSanPham`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `danhgia`
+-- Constraints for table `danhgia`
 --
 ALTER TABLE `danhgia`
   ADD CONSTRAINT `fk_danhgia_nguoidung` FOREIGN KEY (`maNguoiDung`) REFERENCES `taikhoan` (`maTaiKhoan`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_danhgia_sanpham` FOREIGN KEY (`maSanPham`) REFERENCES `sanpham` (`maSanPham`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `donhang`
+-- Constraints for table `donhang`
 --
 ALTER TABLE `donhang`
   ADD CONSTRAINT `fk_donhang_nguoiMua` FOREIGN KEY (`maNguoiMua`) REFERENCES `taikhoan` (`maTaiKhoan`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `donhang_shop`
+-- Constraints for table `donhang_shop`
 --
 ALTER TABLE `donhang_shop`
   ADD CONSTRAINT `donhang_shop_ibfk_1` FOREIGN KEY (`maDonHang`) REFERENCES `donhang` (`maDonHang`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -1170,28 +1099,28 @@ ALTER TABLE `donhang_shop`
   ADD CONSTRAINT `donhang_shop_ibfk_3` FOREIGN KEY (`maNguoiBan`) REFERENCES `taikhoan` (`maTaiKhoan`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Các ràng buộc cho bảng `giohang`
+-- Constraints for table `giohang`
 --
 ALTER TABLE `giohang`
   ADD CONSTRAINT `giohang_ibfk_1` FOREIGN KEY (`maNguoiDung`) REFERENCES `taikhoan` (`maTaiKhoan`) ON DELETE CASCADE,
   ADD CONSTRAINT `giohang_ibfk_2` FOREIGN KEY (`maSanPham`) REFERENCES `sanpham` (`maSanPham`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `nhantin`
+-- Constraints for table `nhantin`
 --
 ALTER TABLE `nhantin`
   ADD CONSTRAINT `fk_thongbao_nguoiGui` FOREIGN KEY (`maNguoiGui`) REFERENCES `taikhoan` (`maTaiKhoan`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_thongbao_nguoiNhan` FOREIGN KEY (`maNguoiNhan`) REFERENCES `taikhoan` (`maTaiKhoan`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `sanpham`
+-- Constraints for table `sanpham`
 --
 ALTER TABLE `sanpham`
   ADD CONSTRAINT `fk_sanpham_danhmuc` FOREIGN KEY (`maDanhMuc`) REFERENCES `danhmuc` (`maDanhMuc`) ON DELETE SET NULL,
   ADD CONSTRAINT `fk_sanpham_nguoiBan` FOREIGN KEY (`maNguoiBan`) REFERENCES `taikhoan` (`maTaiKhoan`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `thanhtoan`
+-- Constraints for table `thanhtoan`
 --
 ALTER TABLE `thanhtoan`
   ADD CONSTRAINT `fk_thanhtoan_donhang` FOREIGN KEY (`maDonHang`) REFERENCES `donhang` (`maDonHang`) ON DELETE CASCADE;

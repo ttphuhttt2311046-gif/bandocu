@@ -20,7 +20,6 @@ $uid = $_SESSION['user_id'];
 </div>
       <div class="nav">
         <?php
-
 ?>
  <?php 
         if (isset($_SESSION['user_id'])) {
@@ -54,7 +53,7 @@ $uid = $_SESSION['user_id'];
       </div>
       <span class="chev">›</span>
     </a>
-    <a class="setting-item" href="#" data-key="diachi">
+    <a class="setting-item" href="caidat/diachi.php" data-key="diachi">
       <div>
         <span class="label">Địa Chỉ</span>
       </div>

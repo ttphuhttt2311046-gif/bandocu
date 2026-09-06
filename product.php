@@ -564,8 +564,10 @@ $cacheBuster = is_file(__DIR__ . '/' . $sellerAvatar) ? '?v=' . filemtime(__DIR_
                     style="padding: 14px 28px; background: #ff9900; color: white; border: none; border-radius: 6px; font-size: 17px; font-weight: bold; cursor: pointer; flex: 1;">
                 🛒 Thêm vào giỏ hàng
             </button>
-
-            
+            <a href="caidat/baocaosp.php?id=<?= $product['maSanPham'] ?>"
+            style="padding: 14px 28px; background: #dc3545; color: white; text-decoration: none; border-radius: 6px; font-size: 17px; font-weight: bold; text-align: center;">
+                ⚠ Báo cáo sản phẩm
+            </a>
         </div>
     </div>
     <!-- ==================== HẾT PHẦN NÚT ==================== -->

@@ -382,6 +382,7 @@ function startVoice() {
     <div id="chat-body">
         <select id="chat-user">
             <option value="">-- Chọn người để chat --</option>
+                <option value="9998">🏪 Shop Đồ Cũ</option>
                 <option value="9999">🤖 AI Hỗ Trợ</option>
             <?php
            $me = $_SESSION['user_id'];

@@ -314,11 +314,13 @@ if (
         "SELECT maShop, maNguoiBaoCao FROM baocao_shop WHERE maBaoCao = ?"
     );
 
-    $messageStmt = $conn->prepare(
-        "INSERT INTO nhantin
-            (noiDung, maNguoiGui, maNguoiNhan, trangThai, ngayGui)
-         VALUES (?, 9999, ?, 'chua_xem', NOW())"
-    );
+    $reportSenderId = 9998;
+
+$messageStmt = $conn->prepare("
+    INSERT INTO nhantin
+        (noiDung, maNguoiGui, maNguoiNhan, trangThai, ngayGui)
+    VALUES (?, ?, ?, 'chua_xem', NOW())
+");
 
     if (!$reportStmt || !$messageStmt) {
         http_response_code(500);
@@ -383,7 +385,12 @@ if (
                     continue;
                 }
 
-                $messageStmt->bind_param("si", $message, $receiverId);
+                $messageStmt->bind_param(
+    "sii",
+    $message,
+    $reportSenderId,
+    $receiverId
+);
 
                 if (!$messageStmt->execute()) {
                     throw new Exception($messageStmt->error);

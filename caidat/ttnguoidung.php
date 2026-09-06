@@ -20,7 +20,7 @@ if ($colCheck && $colCheck->num_rows > 0) {
 }
 
 // Lấy thông tin cũ
-$sql = "SELECT tenNguoiDung, soDienThoai, diaChi" . ($hasAvatarCol ? ", avatar" : "") . " FROM taikhoan WHERE maTaiKhoan = ?";
+$sql = "SELECT tenNguoiDung, soDienThoai" . ($hasAvatarCol ? ", avatar" : "") . " FROM taikhoan WHERE maTaiKhoan = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -42,8 +42,6 @@ $avatarPath = $user['avatar'] ?? "assets/img/avatars/default.png";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tenNguoiDung = trim($_POST["tenNguoiDung"] ?? "");
     $soDienThoai = trim($_POST["soDienThoai"] ?? "");
-    $diaChi = trim($_POST["diaChi"] ?? "");
-
     $oldPassword = $_POST["oldPassword"] ?? "";
     $newPassword = $_POST["newPassword"] ?? "";
     $confirmPassword = $_POST["confirmPassword"] ?? "";
@@ -151,17 +149,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Lưu profile nếu không lỗi
         if ($profileError === null) {
             if ($hasAvatarCol) {
-                $update = $conn->prepare("UPDATE taikhoan SET tenNguoiDung=?, soDienThoai=?, diaChi=?, avatar=? WHERE maTaiKhoan=?");
-                $update->bind_param("ssssi", $tenNguoiDung, $soDienThoai, $diaChi, $avatarPath, $id);
+              $update = $conn->prepare("UPDATE taikhoan SET tenNguoiDung=?, soDienThoai=?, avatar=? WHERE maTaiKhoan=?");
+              $update->bind_param("sssi", $tenNguoiDung, $soDienThoai, $avatarPath, $id);
             } else {
-                $update = $conn->prepare("UPDATE taikhoan SET tenNguoiDung=?, soDienThoai=?, diaChi=? WHERE maTaiKhoan=?");
-                $update->bind_param("sssi", $tenNguoiDung, $soDienThoai, $diaChi, $id);
+              $update = $conn->prepare("UPDATE taikhoan SET tenNguoiDung=?, soDienThoai=? WHERE maTaiKhoan=?");
+              $update->bind_param("ssi", $tenNguoiDung, $soDienThoai, $id);
             }
 
             if ($update->execute()) {
                 $_SESSION['tenNguoiDung'] = $tenNguoiDung;
                 $_SESSION['soDienThoai'] = $soDienThoai;
-                $_SESSION['diaChi'] = $diaChi;
                 if (!empty($avatarPath)) {
                     $_SESSION['avatar'] = $avatarPath;
                 }
@@ -254,11 +251,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="mk">
 <label>Số điện thoại:</label>
 <input type="text" name="soDienThoai" required value="<?php echo htmlspecialchars($user['soDienThoai'] ?? $_SESSION['soDienThoai'] ?? ''); ?>">
-</div>
-
-<div class="mk">
-<label>Địa chỉ:</label>
-<input type="text" name="diaChi" required value="<?php echo htmlspecialchars($user['diaChi'] ?? $_SESSION['diaChi'] ?? ''); ?>">
 </div>
 
 <div class="mk">
